@@ -1,1 +1,61 @@
+# Documentation
 /docs
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# IDE & Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.settings/
+*.sublime-project
+*.sublime-workspace
+
+# PHP
+vendor/
+composer.phar
+composer.lock
+*.log
+
+# Configuration files (sensitive data)
+config/config.php
+config/mail_config.php
+db/db_connect.php
+.env
+.env.local
+
+# Upload directories
+uploads/
+temp/
+tmp/
+
+# Cache
+cache/
+*.cache
+
+# Reports & Exports
+reports/exports/
+exports/
+
+# Backup files
+*.bak
+*.backup
+*.sql.gz
+*.sql.zip
+
+# Node modules (if using npm/yarn)
+node_modules/
+package-lock.json
+yarn.lock

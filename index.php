@@ -55,27 +55,18 @@ include('includes/navbar.php');
         <div class="row g-4">
             <div class="col-md-4">
                 <div class="feature-card">
-                    <div class="feature-icon">
-                        📊
-                    </div>
                     <h4 class="feature-title">Administrare completă</h4>
                     <p class="feature-text">Gestionează evenimente, participanți și rapoarte dintr-un singur loc. Totul organizat și la îndemână.</p>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="feature-card">
-                    <div class="feature-icon">
-                        📈
-                    </div>
                     <h4 class="feature-title">Statistici în timp real</h4>
                     <p class="feature-text">Monitorizează performanța evenimentelor cu grafice interactive și rapoarte detaliate.</p>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="feature-card">
-                    <div class="feature-icon">
-                        💬
-                    </div>
                     <h4 class="feature-title">Contact ușor</h4>
                     <p class="feature-text">Trimite mesaje direct din secțiunea de contact și primește suport rapid de la echipa noastră.</p>
                 </div>

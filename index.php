@@ -6,14 +6,14 @@ include('includes/navbar.php');
 <!-- Hero Section -->
 <section class="hero-gradient text-center">
     <div class="container hero-content">
-        <h1 class="hero-title text-white">Organizează evenimente<br>ușor și rapid!</h1>
-        <p class="hero-subtitle text-white">Platforma ta completă pentru gestionarea evenimentelor,<br>invitațiilor și raportărilor.</p>
+        <h1 class="hero-title text-white">Organizare Evenimente</h1>
+        <p class="hero-subtitle text-white">Platformă pentru gestionarea evenimentelor și înregistrarea participanților</p>
         <div class="mt-4">
-            <a href="events/list_events.php" class="btn btn-light btn-custom me-3">
+            <a href="events/list_events.php" class="btn btn-light btn-custom me-2">
                 Vezi evenimente
             </a>
-            <a href="pages/about.php" class="btn btn-outline-light btn-custom">
-                Despre aplicație
+            <a href="register.php" class="btn btn-outline-light btn-custom">
+                Creează cont
             </a>
         </div>
     </div>
@@ -25,20 +25,20 @@ include('includes/navbar.php');
         <div class="row">
             <div class="col-md-4">
                 <div class="stat-item">
-                    <div class="stat-number">500+</div>
-                    <div class="stat-label">Evenimente organizate</div>
+                    <div class="stat-number">150+</div>
+                    <div class="stat-label">Evenimente</div>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="stat-item">
-                    <div class="stat-number">10K+</div>
-                    <div class="stat-label">Participanți fericiți</div>
+                    <div class="stat-number">2.5K+</div>
+                    <div class="stat-label">Participanți</div>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="stat-item">
-                    <div class="stat-number">98%</div>
-                    <div class="stat-label">Rată de satisfacție</div>
+                    <div class="stat-number">45+</div>
+                    <div class="stat-label">Organizatori</div>
                 </div>
             </div>
         </div>
@@ -46,29 +46,29 @@ include('includes/navbar.php');
 </section>
 
 <!-- Features Section -->
-<section class="features-section py-5" style="padding: 80px 0;">
+<section class="features-section py-5" style="padding: 60px 0;">
     <div class="container">
         <div class="text-center mb-5">
-            <h2 class="display-5 fw-bold mb-3">De ce să ne alegi?</h2>
-            <p class="text-muted">Totul de care ai nevoie pentru evenimente perfecte</p>
+            <h2 class="mb-3" style="font-size: 2rem; font-weight: 600;">Funcționalități</h2>
+            <p class="text-muted">Instrument simplu pentru gestionarea evenimentelor</p>
         </div>
         <div class="row g-4">
             <div class="col-md-4">
                 <div class="feature-card">
-                    <h4 class="feature-title">Administrare completă</h4>
-                    <p class="feature-text">Gestionează evenimente, participanți și rapoarte dintr-un singur loc. Totul organizat și la îndemână.</p>
+                    <h4 class="feature-title">Gestionare evenimente</h4>
+                    <p class="feature-text">Creează și administrează evenimente. Urmărește participanții și generează rapoarte.</p>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="feature-card">
-                    <h4 class="feature-title">Statistici în timp real</h4>
-                    <p class="feature-text">Monitorizează performanța evenimentelor cu grafice interactive și rapoarte detaliate.</p>
+                    <h4 class="feature-title">Statistici</h4>
+                    <p class="feature-text">Vezi statistici despre evenimente și participanți într-un dashboard simplu.</p>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="feature-card">
-                    <h4 class="feature-title">Contact ușor</h4>
-                    <p class="feature-text">Trimite mesaje direct din secțiunea de contact și primește suport rapid de la echipa noastră.</p>
+                    <h4 class="feature-title">Export rapoarte</h4>
+                    <p class="feature-text">Exportă date în format CSV, Excel sau PDF pentru raportare.</p>
                 </div>
             </div>
         </div>
@@ -78,10 +78,10 @@ include('includes/navbar.php');
 <!-- CTA Section -->
 <section class="cta-section text-center">
     <div class="container">
-        <h2 class="cta-title">Începe chiar acum!</h2>
-        <p class="lead mb-4" style="font-size: 1.2rem; opacity: 0.95;">Creează un cont gratuit și începe să organizezi evenimentele tale astăzi.</p>
-        <a href="register.php" class="btn btn-light btn-custom" style="font-size: 1.2rem;">
-            Creează cont gratuit
+        <h2 class="cta-title">Începe să organizezi evenimente</h2>
+        <p class="lead mb-4" style="font-size: 1rem; opacity: 0.9;">Creează un cont pentru a avea acces la toate funcționalitățile.</p>
+        <a href="register.php" class="btn btn-light btn-custom">
+            Înregistrare
         </a>
     </div>
 </section>

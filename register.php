@@ -52,71 +52,57 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 ?>
+<?php include 'includes/header.php'; ?>
+<?php include 'includes/navbar.php'; ?>
 
-<!DOCTYPE html>
-<html lang="ro">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Înregistrare - EventManager</title>
-    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
-    <link rel="stylesheet" href="assets/css/style.css">
-</head>
-<body>
-    <?php include 'includes/navbar.php'; ?>
-
-    <div class="container mt-5">
+<section class="hero-gradient d-flex align-items-center" style="min-height: 80vh;">
+    <div class="container">
         <div class="row justify-content-center">
-            <div class="col-md-6">
-                <div class="card shadow">
-                    <div class="card-header bg-primary text-white">
-                        <h3 class="mb-0">Înregistrare</h3>
-                    </div>
-                    <div class="card-body">
-                        <?php if (isset($error) && !empty($error)): ?>
-                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                                <?php echo $error; ?>
-                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                            </div>
-                        <?php endif; ?>
-
-                        <form method="POST" action="register.php">
-                            <div class="mb-3">
-                                <label for="username" class="form-label">Username</label>
-                                <input type="text" class="form-control" id="username" name="username"
-                                       value="<?php echo isset($username) ? $username : ''; ?>" required>
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="email" class="form-label">Email</label>
-                                <input type="email" class="form-control" id="email" name="email"
-                                       value="<?php echo isset($email) ? $email : ''; ?>" required>
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="password" class="form-label">Parolă</label>
-                                <input type="password" class="form-control" id="password" name="password" required>
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="confirm_password" class="form-label">Confirmă Parola</label>
-                                <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
-                            </div>
-
-                            <button type="submit" class="btn btn-primary w-100">Înregistrează-te</button>
-                        </form>
-
-                        <div class="mt-3 text-center">
-                            <p>Ai deja cont? <a href="login.php">Autentifică-te aici</a></p>
-                        </div>
-                    </div>
+            <div class="col-md-5">
+                <div class="text-center mb-4">
+                    <h2 class="text-white mb-2">Înregistrare</h2>
+                    <p class="text-white opacity-75">Creează un cont nou</p>
                 </div>
+
+                <?php if (isset($error) && !empty($error)): ?>
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <?php echo $error; ?>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                <?php endif; ?>
+
+                <form method="POST" action="register.php" class="bg-white p-4 rounded shadow">
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Username</label>
+                        <input type="text" class="form-control" id="username" name="username"
+                               value="<?php echo isset($username) ? $username : ''; ?>" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" name="email"
+                               value="<?php echo isset($email) ? $email : ''; ?>" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Parolă</label>
+                        <input type="password" class="form-control" id="password" name="password" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="confirm_password" class="form-label">Confirmă Parola</label>
+                        <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 btn-custom">Înregistrează-te</button>
+
+                    <div class="mt-3 text-center">
+                        <p class="mb-0">Ai deja cont? <a href="login.php">Autentifică-te aici</a></p>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
+</section>
 
-    <?php include 'includes/footer.php'; ?>
-
-    <script src="assets/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+<?php include 'includes/footer.php'; ?>

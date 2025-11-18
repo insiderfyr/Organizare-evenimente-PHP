@@ -1,4 +1,5 @@
 <?php
+session_start();
 include('includes/header.php');
 include('includes/navbar.php');
 ?>
@@ -9,12 +10,23 @@ include('includes/navbar.php');
         <h1 class="hero-title text-white">Organizare Evenimente</h1>
         <p class="hero-subtitle text-white">Platformă pentru gestionarea evenimentelor și înregistrarea participanților</p>
         <div class="mt-4">
-            <a href="events/list_events.php" class="btn btn-light btn-custom me-2">
-                Vezi evenimente
-            </a>
-            <a href="register.php" class="btn btn-outline-light btn-custom">
-                Creează cont
-            </a>
+            <?php if (isset($_SESSION['user_id'])): ?>
+                <a href="events/list_events.php" class="btn btn-light btn-custom me-2">
+                    Vizualizează evenimente
+                </a>
+                <?php if (isset($_SESSION['role']) && ($_SESSION['role'] === 'admin' || $_SESSION['role'] === 'organizer')): ?>
+                    <a href="events/create_event.php" class="btn btn-outline-light btn-custom">
+                        Creează eveniment
+                    </a>
+                <?php endif; ?>
+            <?php else: ?>
+                <a href="events/list_events.php" class="btn btn-light btn-custom me-2">
+                    Vezi evenimente
+                </a>
+                <a href="register.php" class="btn btn-outline-light btn-custom">
+                    Creează cont
+                </a>
+            <?php endif; ?>
         </div>
     </div>
 </section>
@@ -78,11 +90,19 @@ include('includes/navbar.php');
 <!-- CTA Section -->
 <section class="cta-section text-center">
     <div class="container">
-        <h2 class="cta-title">Începe să organizezi evenimente</h2>
-        <p class="lead mb-4" style="font-size: 1rem; opacity: 0.9;">Creează un cont pentru a avea acces la toate funcționalitățile.</p>
-        <a href="register.php" class="btn btn-light btn-custom">
-            Înregistrare
-        </a>
+        <?php if (isset($_SESSION['user_id'])): ?>
+            <h2 class="cta-title">Descoperă evenimente interesante</h2>
+            <p class="lead mb-4" style="font-size: 1rem; opacity: 0.9;">Vizualizează toate evenimentele disponibile și înscrie-te.</p>
+            <a href="events/list_events.php" class="btn btn-light btn-custom">
+                Vizualizează evenimente
+            </a>
+        <?php else: ?>
+            <h2 class="cta-title">Începe să organizezi evenimente</h2>
+            <p class="lead mb-4" style="font-size: 1rem; opacity: 0.9;">Creează un cont pentru a avea acces la toate funcționalitățile.</p>
+            <a href="register.php" class="btn btn-light btn-custom">
+                Înregistrare
+            </a>
+        <?php endif; ?>
     </div>
 </section>
 

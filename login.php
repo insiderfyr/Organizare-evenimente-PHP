@@ -17,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($username_or_email) || empty($password)) {
         $error = "Toate c�mpurile sunt obligatorii!";
     } else {
-        $stmt = $conn->prepare("SELECT id, username, email, password FROM users WHERE username = ? OR email = ?");
+        $stmt = $conn->prepare("SELECT id, username, email, password, role FROM users WHERE username = ? OR email = ?");
         $stmt->bind_param("ss", $username_or_email, $username_or_email);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -29,6 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['username'] = $user['username'];
                 $_SESSION['email'] = $user['email'];
+                $_SESSION['role'] = $user['role'];
 
                 $stmt->close();
                 redirect('index.php');

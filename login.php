@@ -1,0 +1,88 @@
+<?php
+session_start();
+require_once 'includes/functions.php';
+require_once 'db/db_connect.php';
+
+if (is_logged_in()) {
+    redirect('index.php');
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+    $username_or_email = sanitize($_POST['username']);
+    $password = $_POST['password'];
+
+    $error = '';
+
+    if (empty($username_or_email) || empty($password)) {
+        $error = "Toate c�mpurile sunt obligatorii!";
+    } else {
+        $stmt = $conn->prepare("SELECT id, username, email, password FROM users WHERE username = ? OR email = ?");
+        $stmt->bind_param("ss", $username_or_email, $username_or_email);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if ($result->num_rows === 1) {
+            $user = $result->fetch_assoc();
+
+            if (password_verify($password, $user['password'])) {
+                $_SESSION['user_id'] = $user['id'];
+                $_SESSION['username'] = $user['username'];
+                $_SESSION['email'] = $user['email'];
+
+                $stmt->close();
+                redirect('index.php');
+            } else {
+                $error = "Parolă incorectă!";
+            }
+        } else {
+            $error = "Username sau email inexistent!";
+        }
+
+        $stmt->close();
+    }
+}
+?>
+<?php include 'includes/header.php'; ?>
+<?php include 'includes/navbar.php'; ?>
+
+<section class="hero-gradient d-flex align-items-center" style="min-height: 80vh;">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-5">
+                <div class="text-center mb-4">
+                    <h2 class="text-white mb-2">Autentificare</h2>
+                    <p class="text-white opacity-75">Conectează-te la contul tău</p>
+                </div>
+
+                <?php if (isset($error) && !empty($error)): ?>
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <?php echo $error; ?>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                <?php endif; ?>
+
+                <form method="POST" action="login.php" class="bg-white p-4 rounded shadow">
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Username sau Email</label>
+                        <input type="text" class="form-control" id="username" name="username"
+                               value="<?php echo isset($username_or_email) ? $username_or_email : ''; ?>" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Parolă</label>
+                        <input type="password" class="form-control" id="password" name="password" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 btn-custom">Autentifică-te</button>
+
+                    <div class="mt-3 text-center">
+                        <p class="mb-0">Nu ai cont? <a href="register.php">Înregistrează-te aici</a></p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<?php include 'includes/footer.php'; ?>

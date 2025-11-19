@@ -15,7 +15,7 @@ $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_event'])) {
     $event_id = (int)$_POST['event_id'];
 
-    // terge mai întâi toate înregistrrile
+    // terge mai ï¿½ntï¿½i toate ï¿½nregistrrile
     $stmt = $conn->prepare("DELETE FROM registrations WHERE event_id = ?");
     $stmt->bind_param("i", $event_id);
     $stmt->execute();
@@ -146,7 +146,7 @@ $stmt->close();
                     }
                     ?>
                     <h4 class="text-success mb-0"><?php echo $total_registrations; ?></h4>
-                    <small class="text-muted">Total înregistrri</small>
+                    <small class="text-muted">Total ï¿½nregistrri</small>
                 </div>
             </div>
             <div class="col-md-4 mb-3">
@@ -169,7 +169,7 @@ $stmt->close();
             <div class="p-4">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h5 class="mb-0">List evenimente</h5>
-                    <a href="/admin/dashboard.php" class="btn btn-sm btn-secondary">Înapoi la Dashboard</a>
+                    <a href="/admin/dashboard.php" class="btn btn-sm btn-secondary">ï¿½napoi la Dashboard</a>
                 </div>
 
                 <?php if (empty($events)): ?>
@@ -234,7 +234,7 @@ $stmt->close();
                                         </td>
                                         <td>
                                             <div class="btn-group">
-                                                <a href="/events/event_details.php?id=<?php echo $event['id']; ?>"
+                                                <a href="/events/view_event.php?id=<?php echo $event['id']; ?>"
                                                    class="btn btn-sm btn-primary" title="Detalii">
                                                     <i class="bi bi-eye"></i>
                                                 </a>
@@ -265,7 +265,7 @@ $stmt->close();
                                                                 <?php if ($event['registrations_count'] > 0): ?>
                                                                     <p class="text-danger">
                                                                         <i class="bi bi-exclamation-triangle"></i>
-                                                                        Acest eveniment are <?php echo $event['registrations_count']; ?> participani înregistrai!
+                                                                        Acest eveniment are <?php echo $event['registrations_count']; ?> participani ï¿½nregistrai!
                                                                     </p>
                                                                 <?php endif; ?>
                                                             </div>

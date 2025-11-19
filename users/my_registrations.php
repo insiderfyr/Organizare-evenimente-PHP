@@ -110,7 +110,7 @@ $stmt->close();
                             </div>
 
                             <div class="d-flex gap-2">
-                                <a href="/events/event_details.php?id=<?php echo $reg['id']; ?>" class="btn btn-sm btn-info flex-grow-1">
+                                <a href="/events/view_event.php?id=<?php echo $reg['id']; ?>" class="btn btn-sm btn-info flex-grow-1">
                                     Detalii
                                 </a>
                                 <form method="POST" action="" class="flex-grow-1" onsubmit="return confirm('Ești sigur că vrei să te dezabonezi?');">

@@ -109,7 +109,7 @@ $stmt->close();
                                         <td><?php echo date('d.m.Y H:i', strtotime($event['date'])); ?></td>
                                         <td><?php echo htmlspecialchars($event['location']); ?></td>
                                         <td>
-                                            <a href="/events/event_details.php?id=<?php echo $event['id']; ?>" class="btn btn-sm btn-info">Detalii</a>
+                                            <a href="/events/view_event.php?id=<?php echo $event['id']; ?>" class="btn btn-sm btn-info">Detalii</a>
                                         </td>
                                     </tr>
                                     <?php endforeach; ?>

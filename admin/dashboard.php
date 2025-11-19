@@ -19,7 +19,7 @@ $stats['total_users'] = $result->fetch_assoc()['total'];
 $result = $conn->query("SELECT COUNT(*) as total FROM events");
 $stats['total_events'] = $result->fetch_assoc()['total'];
 
-// Total înregistrri
+// Total ï¿½nregistrri
 $result = $conn->query("SELECT COUNT(*) as total FROM registrations");
 $stats['total_registrations'] = $result->fetch_assoc()['total'];
 
@@ -48,7 +48,7 @@ while ($row = $result->fetch_assoc()) {
     $recent_events[] = $row;
 }
 
-// Ultimii 5 utilizatori înregistrai
+// Ultimii 5 utilizatori ï¿½nregistrai
 $recent_users = [];
 $result = $conn->query("
     SELECT id, username, email, role, created_at
@@ -87,7 +87,7 @@ while ($row = $result->fetch_assoc()) {
             <div class="col-md-3 mb-3">
                 <div class="bg-white p-4 rounded shadow text-center">
                     <h3 class="text-info mb-2"><?php echo $stats['total_registrations']; ?></h3>
-                    <p class="mb-0 text-muted">Total înregistrri</p>
+                    <p class="mb-0 text-muted">Total ï¿½nregistrri</p>
                 </div>
             </div>
             <div class="col-md-3 mb-3">
@@ -120,7 +120,7 @@ while ($row = $result->fetch_assoc()) {
                 <div class="bg-white p-4 rounded shadow">
                     <h5 class="mb-3">Evenimente recente</h5>
                     <?php if (empty($recent_events)): ?>
-                        <p class="text-muted">Nu exist evenimente înc.</p>
+                        <p class="text-muted">Nu exist evenimente ï¿½nc.</p>
                     <?php else: ?>
                         <div class="list-group">
                             <?php foreach ($recent_events as $event): ?>
@@ -129,12 +129,12 @@ while ($row = $result->fetch_assoc()) {
                                     <div>
                                         <h6 class="mb-1"><?php echo htmlspecialchars($event['title']); ?></h6>
                                         <small class="text-muted">
-                                            =Å <?php echo date('d.m.Y H:i', strtotime($event['date'])); ?><br>
-                                            =Í <?php echo htmlspecialchars($event['location']); ?><br>
+                                            =ï¿½ <?php echo date('d.m.Y H:i', strtotime($event['date'])); ?><br>
+                                            =ï¿½ <?php echo htmlspecialchars($event['location']); ?><br>
                                             =d <?php echo htmlspecialchars($event['organizer']); ?>
                                         </small>
                                     </div>
-                                    <a href="/events/event_details.php?id=<?php echo $event['id']; ?>" class="btn btn-sm btn-outline-primary">Detalii</a>
+                                    <a href="/events/view_event.php?id=<?php echo $event['id']; ?>" class="btn btn-sm btn-outline-primary">Detalii</a>
                                 </div>
                             </div>
                             <?php endforeach; ?>
@@ -148,7 +148,7 @@ while ($row = $result->fetch_assoc()) {
                 <div class="bg-white p-4 rounded shadow">
                     <h5 class="mb-3">Utilizatori receni</h5>
                     <?php if (empty($recent_users)): ?>
-                        <p class="text-muted">Nu exist utilizatori înc.</p>
+                        <p class="text-muted">Nu exist utilizatori ï¿½nc.</p>
                     <?php else: ?>
                         <div class="list-group">
                             <?php foreach ($recent_users as $user): ?>
@@ -157,9 +157,9 @@ while ($row = $result->fetch_assoc()) {
                                     <div>
                                         <h6 class="mb-1"><?php echo htmlspecialchars($user['username']); ?></h6>
                                         <small class="text-muted">
-                                            =ç <?php echo htmlspecialchars($user['email']); ?><br>
+                                            =ï¿½ <?php echo htmlspecialchars($user['email']); ?><br>
                                             = Rol: <?php echo htmlspecialchars($user['role']); ?><br>
-                                            =Å <?php echo date('d.m.Y H:i', strtotime($user['created_at'])); ?>
+                                            =ï¿½ <?php echo date('d.m.Y H:i', strtotime($user['created_at'])); ?>
                                         </small>
                                     </div>
                                     <span class="badge bg-<?php echo $user['role'] === 'admin' ? 'danger' : ($user['role'] === 'organizer' ? 'warning' : 'secondary'); ?>">

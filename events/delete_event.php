@@ -46,7 +46,7 @@ $error = '';
 
 // Procesare tergere
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_delete'])) {
-    // terge mai întâi toate înregistrrile
+    // terge mai ï¿½ntï¿½i toate ï¿½nregistrrile
     $stmt = $conn->prepare("DELETE FROM registrations WHERE event_id = ?");
     $stmt->bind_param("i", $event_id);
     $stmt->execute();
@@ -73,8 +73,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_delete'])) {
         <div class="row justify-content-center">
             <div class="col-md-6">
                 <div class="mb-4">
-                    <a href="/events/event_details.php?id=<?php echo $event_id; ?>" class="btn btn-sm btn-outline-secondary mb-3">
-                        <i class="bi bi-arrow-left"></i> Înapoi la eveniment
+                    <a href="/events/view_event.php?id=<?php echo $event_id; ?>" class="btn btn-sm btn-outline-secondary mb-3">
+                        <i class="bi bi-arrow-left"></i> ï¿½napoi la eveniment
                     </a>
                     <h2 class="mb-2 text-danger">terge eveniment</h2>
                     <p class="text-muted">Aceast aciune este ireversibil!</p>
@@ -109,7 +109,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_delete'])) {
                                 <td><?php echo htmlspecialchars($event['location']); ?></td>
                             </tr>
                             <tr>
-                                <th>Participani înregistrai:</th>
+                                <th>Participani ï¿½nregistrai:</th>
                                 <td>
                                     <span class="badge bg-info"><?php echo $registrations_count; ?></span>
                                 </td>
@@ -120,14 +120,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_delete'])) {
                     <?php if ($registrations_count > 0): ?>
                         <div class="alert alert-warning">
                             <i class="bi bi-info-circle"></i>
-                            Acest eveniment are <strong><?php echo $registrations_count; ?></strong> participani înregistrai.
-                            tergerea evenimentului va anula toate înregistrrile!
+                            Acest eveniment are <strong><?php echo $registrations_count; ?></strong> participani ï¿½nregistrai.
+                            tergerea evenimentului va anula toate ï¿½nregistrrile!
                         </div>
                     <?php endif; ?>
 
                     <form method="POST" action="">
                         <div class="d-flex justify-content-between gap-2">
-                            <a href="/events/event_details.php?id=<?php echo $event_id; ?>" class="btn btn-secondary flex-grow-1">
+                            <a href="/events/view_event.php?id=<?php echo $event_id; ?>" class="btn btn-secondary flex-grow-1">
                                 <i class="bi bi-x-circle"></i> Anuleaz
                             </a>
                             <button type="submit" name="confirm_delete" class="btn btn-danger flex-grow-1">

@@ -198,7 +198,7 @@ $stmt->close();
 
                             <div class="card-footer bg-white border-top-0">
                                 <div class="d-flex gap-2">
-                                    <a href="/events/event_details.php?id=<?php echo $event['id']; ?>" class="btn btn-sm btn-primary flex-grow-1">
+                                    <a href="/events/view_event.php?id=<?php echo $event['id']; ?>" class="btn btn-sm btn-primary flex-grow-1">
                                         Detalii
                                     </a>
                                     <?php if ($is_organizer): ?>

@@ -1,4 +1,5 @@
 <?php
+header('Content-Type: text/html; charset=UTF-8');
 require_once '../includes/auth_check.php';
 require_once '../includes/functions.php';
 require_once '../db/db_connect.php';

@@ -55,6 +55,9 @@ exports/
 *.sql.gz
 *.sql.zip
 
+# SQL files (may contain sensitive data)
+/sql
+
 # Node modules (if using npm/yarn)
 node_modules/
 package-lock.json

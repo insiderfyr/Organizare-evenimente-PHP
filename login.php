@@ -15,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $error = '';
 
     if (empty($username_or_email) || empty($password)) {
-        $error = "Toate c�mpurile sunt obligatorii!";
+        $error = "All fields are required!";
     } else {
         $stmt = $conn->prepare("SELECT id, username, email, password, role FROM users WHERE username = ? OR email = ?");
         $stmt->bind_param("ss", $username_or_email, $username_or_email);
@@ -34,10 +34,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $stmt->close();
                 redirect('index.php');
             } else {
-                $error = "Parolă incorectă!";
+                $error = "Incorrect password!";
             }
         } else {
-            $error = "Username sau email inexistent!";
+            $error = "Username or email does not exist!";
         }
 
         $stmt->close();
@@ -52,8 +52,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="row justify-content-center">
             <div class="col-md-5">
                 <div class="text-center mb-4">
-                    <h2 class="text-white mb-2">Autentificare</h2>
-                    <p class="text-white opacity-75">Conectează-te la contul tău</p>
+                    <h2 class="text-white mb-2">Login</h2>
+                    <p class="text-white opacity-75">Sign in to your account</p>
                 </div>
 
                 <?php if (isset($error) && !empty($error)): ?>
@@ -65,20 +65,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 <form method="POST" action="login.php" class="bg-white p-4 rounded shadow">
                     <div class="mb-3">
-                        <label for="username" class="form-label">Username sau Email</label>
+                        <label for="username" class="form-label">Username or Email</label>
                         <input type="text" class="form-control" id="username" name="username"
                                value="<?php echo isset($username_or_email) ? htmlspecialchars($username_or_email) : ''; ?>" required>
                     </div>
 
                     <div class="mb-3">
-                        <label for="password" class="form-label">Parolă</label>
+                        <label for="password" class="form-label">Password</label>
                         <input type="password" class="form-control" id="password" name="password" required>
                     </div>
 
-                    <button type="submit" class="btn btn-primary w-100 btn-custom">Autentifică-te</button>
+                    <button type="submit" class="btn btn-primary w-100 btn-custom">Sign In</button>
 
                     <div class="mt-3 text-center">
-                        <p class="mb-0">Nu ai cont? <a href="register.php">Înregistrează-te aici</a></p>
+                        <p class="mb-0">Don't have an account? <a href="register.php">Register here</a></p>
                     </div>
                 </form>
             </div>

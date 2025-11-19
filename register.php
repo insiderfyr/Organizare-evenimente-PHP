@@ -17,15 +17,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $error = '';
 
     if (empty($username) || empty($email) || empty($password) || empty($confirm_password)) {
-        $error = "Toate câmpurile sunt obligatorii!";
+        $error = "All fields are required!";
     }else if (!filter_var($email, FILTER_VALIDATE_EMAIL)){
-        $error = "Email invalid!";
+        $error = "Invalid email!";
     }else if ($password !== $confirm_password) {
-        $error = "Parolele nu coincid!";
+        $error = "Passwords do not match!";
     }else if (strlen($username) < 3) {
-        $error = "Username-ul trebuie să aibă minim 3 caractere!";
+        $error = "Username must be at least 3 characters!";
     }else if (strlen($password) < 6) {
-        $error = "Parola trebuie să aibă minim 6 caractere!";
+        $error = "Password must be at least 6 characters!";
     } else {
         $stmt = $conn->prepare("SELECT id FROM users WHERE username = ? OR email = ?");
         $stmt->bind_param("ss", $username, $email);
@@ -33,12 +33,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->store_result();
 
         if ($stmt->num_rows > 0) {
-            $error = "Username-ul sau email-ul există deja!";
+            $error = "Username or email already exists!";
         }
         $stmt->close();
     }
 
-    // Dacă nu sunt erori, salvează în DB
+    // If no errors, save to DB
     if (empty($error)) {
         $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
@@ -49,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->close();
             redirect('login.php');
         } else {
-            $error = "Eroare la crearea contului!";
+            $error = "Error creating account!";
         }
     }
 }
@@ -62,8 +62,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="row justify-content-center">
             <div class="col-md-5">
                 <div class="text-center mb-4">
-                    <h2 class="text-white mb-2">Înregistrare</h2>
-                    <p class="text-white opacity-75">Creează un cont nou</p>
+                    <h2 class="text-white mb-2">Register</h2>
+                    <p class="text-white opacity-75">Create a new account</p>
                 </div>
 
                 <?php if (isset($error) && !empty($error)): ?>
@@ -87,19 +87,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
 
                     <div class="mb-3">
-                        <label for="password" class="form-label">Parolă</label>
+                        <label for="password" class="form-label">Password</label>
                         <input type="password" class="form-control" id="password" name="password" required>
                     </div>
 
                     <div class="mb-3">
-                        <label for="confirm_password" class="form-label">Confirmă Parola</label>
+                        <label for="confirm_password" class="form-label">Confirm Password</label>
                         <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
                     </div>
 
-                    <button type="submit" class="btn btn-primary w-100 btn-custom">Înregistrează-te</button>
+                    <button type="submit" class="btn btn-primary w-100 btn-custom">Register</button>
 
                     <div class="mt-3 text-center">
-                        <p class="mb-0">Ai deja cont? <a href="login.php">Autentifică-te aici</a></p>
+                        <p class="mb-0">Already have an account? <a href="login.php">Sign in here</a></p>
                     </div>
                 </form>
             </div>

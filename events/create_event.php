@@ -4,7 +4,7 @@ require_once '../includes/auth_check.php';
 require_once '../includes/functions.php';
 require_once '../db/db_connect.php';
 
-// Verifică dacă user-ul are rol de organizer sau admin
+// Check if user has organizer or admin role
 if (!isset($_SESSION['role']) || ($_SESSION['role'] !== 'admin' && $_SESSION['role'] !== 'organizer')) {
     redirect('/index.php');
 }
@@ -21,23 +21,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $max_participants = (int)$_POST['max_participants'];
     $organizer_id = get_user_id();
 
-    // Validare
+    // Validation
     if (empty($title) || empty($description) || empty($date) || empty($location)) {
-        $error = "Toate câmpurile obligatorii trebuie completate!";
+        $error = "All required fields must be completed!";
     } else if ($max_participants < 0) {
-        $error = "Numărul maxim de participanți nu poate fi negativ!";
+        $error = "Maximum number of participants cannot be negative!";
     } else {
-        // Salvează evenimentul
+        // Save event
         $stmt = $conn->prepare("INSERT INTO events (title, description, date, location, category, max_participants, organizer_id) VALUES (?, ?, ?, ?, ?, ?, ?)");
         $stmt->bind_param("sssssis", $title, $description, $date, $location, $category, $max_participants, $organizer_id);
 
         if ($stmt->execute()) {
-            $success = "Eveniment creat cu succes!";
+            $success = "Event created successfully!";
             // Reset form
             $title = $description = $date = $location = $category = '';
             $max_participants = 0;
         } else {
-            $error = "Eroare la crearea evenimentului!";
+            $error = "Error creating event!";
         }
         $stmt->close();
     }
@@ -51,8 +51,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="row justify-content-center">
             <div class="col-md-8">
                 <div class="mb-4">
-                    <h2 class="mb-2">Creează eveniment nou</h2>
-                    <p class="text-muted">Completează detaliile evenimentului</p>
+                    <h2 class="mb-2">Create New Event</h2>
+                    <p class="text-muted">Fill in the event details</p>
                 </div>
 
                 <?php if (!empty($success)): ?>
@@ -71,50 +71,50 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 <form method="POST" action="create_event.php" class="bg-white p-4 rounded shadow">
                     <div class="mb-3">
-                        <label for="title" class="form-label">Titlu eveniment *</label>
+                        <label for="title" class="form-label">Event Title *</label>
                         <input type="text" class="form-control" id="title" name="title"
                                value="<?php echo isset($title) ? htmlspecialchars($title) : ''; ?>" required>
                     </div>
 
                     <div class="mb-3">
-                        <label for="description" class="form-label">Descriere *</label>
+                        <label for="description" class="form-label">Description *</label>
                         <textarea class="form-control" id="description" name="description" rows="4" required><?php echo isset($description) ? htmlspecialchars($description) : ''; ?></textarea>
                     </div>
 
                     <div class="mb-3">
-                        <label for="date" class="form-label">Data și ora *</label>
+                        <label for="date" class="form-label">Date and Time *</label>
                         <input type="datetime-local" class="form-control" id="date" name="date"
                                value="<?php echo isset($date) ? htmlspecialchars($date) : ''; ?>" required>
                     </div>
 
                     <div class="mb-3">
-                        <label for="location" class="form-label">Locație *</label>
+                        <label for="location" class="form-label">Location *</label>
                         <input type="text" class="form-control" id="location" name="location"
                                value="<?php echo isset($location) ? htmlspecialchars($location) : ''; ?>" required>
                     </div>
 
                     <div class="mb-3">
-                        <label for="category" class="form-label">Categorie</label>
+                        <label for="category" class="form-label">Category</label>
                         <select class="form-control" id="category" name="category">
-                            <option value="">-- Selectează categorie --</option>
+                            <option value="">-- Select category --</option>
                             <option value="Workshop" <?php echo (isset($category) && $category === 'Workshop') ? 'selected' : ''; ?>>Workshop</option>
-                            <option value="Conference" <?php echo (isset($category) && $category === 'Conference') ? 'selected' : ''; ?>>Conferință</option>
+                            <option value="Conference" <?php echo (isset($category) && $category === 'Conference') ? 'selected' : ''; ?>>Conference</option>
                             <option value="Seminar" <?php echo (isset($category) && $category === 'Seminar') ? 'selected' : ''; ?>>Seminar</option>
                             <option value="Meetup" <?php echo (isset($category) && $category === 'Meetup') ? 'selected' : ''; ?>>Meetup</option>
-                            <option value="Other" <?php echo (isset($category) && $category === 'Other') ? 'selected' : ''; ?>>Altele</option>
+                            <option value="Other" <?php echo (isset($category) && $category === 'Other') ? 'selected' : ''; ?>>Other</option>
                         </select>
                     </div>
 
                     <div class="mb-3">
-                        <label for="max_participants" class="form-label">Număr maxim de participanți</label>
+                        <label for="max_participants" class="form-label">Maximum Number of Participants</label>
                         <input type="number" class="form-control" id="max_participants" name="max_participants"
                                value="<?php echo isset($max_participants) ? (int)$max_participants : 0; ?>" min="0">
-                        <small class="text-muted">0 = nelimitat</small>
+                        <small class="text-muted">0 = unlimited</small>
                     </div>
 
                     <div class="d-flex justify-content-between">
-                        <a href="/events/list_events.php" class="btn btn-secondary">Anulează</a>
-                        <button type="submit" class="btn btn-primary">Creează eveniment</button>
+                        <a href="/events/list_events.php" class="btn btn-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-primary">Create Event</button>
                     </div>
                 </form>
             </div>

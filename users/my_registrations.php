@@ -7,7 +7,7 @@ $user_id = get_user_id();
 $success = '';
 $error = '';
 
-// Procesare dezabonare
+// Process unsubscription
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['unregister'])) {
     $event_id = (int)$_POST['event_id'];
 
@@ -15,14 +15,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['unregister'])) {
     $stmt->bind_param("ii", $user_id, $event_id);
 
     if ($stmt->execute()) {
-        $success = "Dezabonare reușită!";
+        $success = "Unsubscription successful!";
     } else {
-        $error = "Eroare la dezabonare!";
+        $error = "Error during unsubscription!";
     }
     $stmt->close();
 }
 
-// Preia toate înregistrările utilizatorului cu detalii despre evenimente
+// Get all user registrations with event details
 $stmt = $conn->prepare("
     SELECT
         e.id, e.title, e.description, e.date, e.location, e.category,
@@ -50,8 +50,8 @@ $stmt->close();
 <section class="py-5" style="background-color: #f9fafb; min-height: 80vh;">
     <div class="container">
         <div class="mb-4">
-            <h2 class="mb-2">Înregistrările mele</h2>
-            <p class="text-muted">Evenimente la care ești înscris</p>
+            <h2 class="mb-2">My Registrations</h2>
+            <p class="text-muted">Events you are registered for</p>
         </div>
 
         <?php if (!empty($success)): ?>
@@ -70,8 +70,8 @@ $stmt->close();
 
         <?php if (empty($registrations)): ?>
             <div class="bg-white p-5 rounded shadow text-center">
-                <p class="text-muted mb-4">Nu ești înscris la niciun eveniment momentan.</p>
-                <a href="/events/list_events.php" class="btn btn-primary">Explorează evenimente</a>
+                <p class="text-muted mb-4">You are not registered for any events at the moment.</p>
+                <a href="/events/list_events.php" class="btn btn-primary">Explore Events</a>
             </div>
         <?php else: ?>
             <div class="row">
@@ -91,32 +91,32 @@ $stmt->close();
                             </p>
 
                             <div class="mb-2">
-                                <strong>📅 Data:</strong> <?php echo date('d.m.Y H:i', strtotime($reg['date'])); ?>
+                                <strong>📅 Date:</strong> <?php echo date('d.m.Y H:i', strtotime($reg['date'])); ?>
                             </div>
                             <div class="mb-2">
-                                <strong>📍 Locație:</strong> <?php echo htmlspecialchars($reg['location']); ?>
+                                <strong>📍 Location:</strong> <?php echo htmlspecialchars($reg['location']); ?>
                             </div>
                             <div class="mb-2">
-                                <strong>👤 Organizator:</strong> <?php echo htmlspecialchars($reg['organizer_name']); ?>
+                                <strong>👤 Organizer:</strong> <?php echo htmlspecialchars($reg['organizer_name']); ?>
                             </div>
                             <?php if ($reg['max_participants'] > 0): ?>
                             <div class="mb-2">
-                                <strong>👥 Participanți:</strong>
+                                <strong>👥 Participants:</strong>
                                 <?php echo $reg['current_participants'] . '/' . $reg['max_participants']; ?>
                             </div>
                             <?php endif; ?>
                             <div class="mb-3">
-                                <small class="text-muted">Înregistrat la: <?php echo date('d.m.Y', strtotime($reg['registration_date'])); ?></small>
+                                <small class="text-muted">Registered on: <?php echo date('d.m.Y', strtotime($reg['registration_date'])); ?></small>
                             </div>
 
                             <div class="d-flex gap-2">
                                 <a href="/events/view_event.php?id=<?php echo $reg['id']; ?>" class="btn btn-sm btn-info flex-grow-1">
-                                    Detalii
+                                    Details
                                 </a>
-                                <form method="POST" action="" class="flex-grow-1" onsubmit="return confirm('Ești sigur că vrei să te dezabonezi?');">
+                                <form method="POST" action="" class="flex-grow-1" onsubmit="return confirm('Are you sure you want to unsubscribe?');">
                                     <input type="hidden" name="event_id" value="<?php echo $reg['id']; ?>">
                                     <button type="submit" name="unregister" class="btn btn-sm btn-danger w-100">
-                                        Dezabonare
+                                        Unsubscribe
                                     </button>
                                 </form>
                             </div>

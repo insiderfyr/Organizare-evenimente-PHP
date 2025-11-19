@@ -1,7 +1,7 @@
 
     <footer class="text-center py-4 mt-5">
         <div class="container">
-            <p class="mb-0" style="font-size: 0.9rem;">&copy; <?php echo date('Y'); ?> Organizare Evenimente</p>
+            <p class="mb-0" style="font-size: 0.9rem;">&copy; <?php echo date('Y'); ?> Event Organization</p>
         </div>
     </footer>
 

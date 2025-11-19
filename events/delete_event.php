@@ -4,12 +4,12 @@ require_once '../includes/auth_check.php';
 require_once '../includes/functions.php';
 require_once '../db/db_connect.php';
 
-// Verific dac user-ul are rol de organizer sau admin
+// Check if user has organizer or admin role
 if (!isset($_SESSION['role']) || ($_SESSION['role'] !== 'admin' && $_SESSION['role'] !== 'organizer')) {
     redirect('/index.php');
 }
 
-// Preia ID-ul evenimentului
+// Get event ID
 if (!isset($_GET['id'])) {
     redirect('/events/list_events.php');
 }
@@ -18,7 +18,7 @@ $event_id = (int)$_GET['id'];
 $user_id = get_user_id();
 $user_role = $_SESSION['role'];
 
-// Preia detaliile evenimentului
+// Get event details
 $stmt = $conn->prepare("SELECT * FROM events WHERE id = ?");
 $stmt->bind_param("i", $event_id);
 $stmt->execute();
@@ -30,12 +30,12 @@ if (!$event) {
     redirect('/events/list_events.php');
 }
 
-// Verific dac utilizatorul este organizatorul evenimentului sau admin
+// Check if user is the event organizer or admin
 if ($event['organizer_id'] != $user_id && $user_role !== 'admin') {
     redirect('/events/list_events.php');
 }
 
-// Numr participani
+// Count participants
 $stmt = $conn->prepare("SELECT COUNT(*) as count FROM registrations WHERE event_id = ?");
 $stmt->bind_param("i", $event_id);
 $stmt->execute();
@@ -45,23 +45,23 @@ $stmt->close();
 
 $error = '';
 
-// Procesare tergere
+// Process deletion
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_delete'])) {
-    // terge mai �nt�i toate �nregistrrile
+    // Delete all registrations first
     $stmt = $conn->prepare("DELETE FROM registrations WHERE event_id = ?");
     $stmt->bind_param("i", $event_id);
     $stmt->execute();
     $stmt->close();
 
-    // Apoi terge evenimentul
+    // Then delete the event
     $stmt = $conn->prepare("DELETE FROM events WHERE id = ?");
     $stmt->bind_param("i", $event_id);
 
     if ($stmt->execute()) {
-        $_SESSION['success_message'] = "Eveniment ters cu succes!";
+        $_SESSION['success_message'] = "Event deleted successfully!";
         redirect('/events/list_events.php');
     } else {
-        $error = "Eroare la tergerea evenimentului!";
+        $error = "Error deleting event!";
     }
     $stmt->close();
 }
@@ -75,10 +75,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_delete'])) {
             <div class="col-md-6">
                 <div class="mb-4">
                     <a href="/events/view_event.php?id=<?php echo $event_id; ?>" class="btn btn-sm btn-outline-secondary mb-3">
-                        <i class="bi bi-arrow-left"></i> �napoi la eveniment
+                        <i class="bi bi-arrow-left"></i> Back to Event
                     </a>
-                    <h2 class="mb-2 text-danger">terge eveniment</h2>
-                    <p class="text-muted">Aceast aciune este ireversibil!</p>
+                    <h2 class="mb-2 text-danger">Delete Event</h2>
+                    <p class="text-muted">This action is irreversible!</p>
                 </div>
 
                 <?php if (!empty($error)): ?>
@@ -91,26 +91,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_delete'])) {
                 <div class="bg-white p-4 rounded shadow">
                     <div class="alert alert-danger">
                         <i class="bi bi-exclamation-triangle-fill"></i>
-                        <strong>Atenie!</strong> Eti pe cale s tergi acest eveniment.
+                        <strong>Warning!</strong> You are about to delete this event.
                     </div>
 
                     <div class="mb-4">
-                        <h5 class="mb-3">Detalii eveniment</h5>
+                        <h5 class="mb-3">Event Details</h5>
                         <table class="table">
                             <tr>
-                                <th>Titlu:</th>
+                                <th>Title:</th>
                                 <td><?php echo htmlspecialchars($event['title']); ?></td>
                             </tr>
                             <tr>
-                                <th>Dat:</th>
+                                <th>Date:</th>
                                 <td><?php echo date('d.m.Y H:i', strtotime($event['date'])); ?></td>
                             </tr>
                             <tr>
-                                <th>Locaie:</th>
+                                <th>Location:</th>
                                 <td><?php echo htmlspecialchars($event['location']); ?></td>
                             </tr>
                             <tr>
-                                <th>Participani �nregistrai:</th>
+                                <th>Registered Participants:</th>
                                 <td>
                                     <span class="badge bg-info"><?php echo $registrations_count; ?></span>
                                 </td>
@@ -121,18 +121,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_delete'])) {
                     <?php if ($registrations_count > 0): ?>
                         <div class="alert alert-warning">
                             <i class="bi bi-info-circle"></i>
-                            Acest eveniment are <strong><?php echo $registrations_count; ?></strong> participani �nregistrai.
-                            tergerea evenimentului va anula toate �nregistrrile!
+                            This event has <strong><?php echo $registrations_count; ?></strong> registered participants.
+                            Deleting the event will cancel all registrations!
                         </div>
                     <?php endif; ?>
 
                     <form method="POST" action="">
                         <div class="d-flex justify-content-between gap-2">
                             <a href="/events/view_event.php?id=<?php echo $event_id; ?>" class="btn btn-secondary flex-grow-1">
-                                <i class="bi bi-x-circle"></i> Anuleaz
+                                <i class="bi bi-x-circle"></i> Cancel
                             </a>
                             <button type="submit" name="confirm_delete" class="btn btn-danger flex-grow-1">
-                                <i class="bi bi-trash"></i> Da, terge evenimentul
+                                <i class="bi bi-trash"></i> Yes, Delete Event
                             </button>
                         </div>
                     </form>

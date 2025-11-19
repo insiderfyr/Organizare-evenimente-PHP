@@ -3,15 +3,15 @@ require_once '../includes/auth_check.php';
 require_once '../includes/functions.php';
 require_once '../db/db_connect.php';
 
-// Verific dac user-ul este admin
+// Verify if user is admin
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     redirect('/index.php');
 }
 
-// Statistici generale
+// General statistics
 $stats = [];
 
-// Total utilizatori pe rol
+// Total users by role
 $result = $conn->query("
     SELECT role, COUNT(*) as count
     FROM users
@@ -22,7 +22,7 @@ while ($row = $result->fetch_assoc()) {
     $stats['users_by_role'][$row['role']] = $row['count'];
 }
 
-// Evenimente pe categorie
+// Events by category
 $result = $conn->query("
     SELECT category, COUNT(*) as count
     FROM events
@@ -35,7 +35,7 @@ while ($row = $result->fetch_assoc()) {
     $stats['events_by_category'][$row['category']] = $row['count'];
 }
 
-// Top 5 evenimente cu cele mai multe înregistrri
+// Top 5 events with most registrations
 $result = $conn->query("
     SELECT e.id, e.title, e.date, COUNT(r.id) as registrations_count
     FROM events e
@@ -49,7 +49,7 @@ while ($row = $result->fetch_assoc()) {
     $stats['top_events'][] = $row;
 }
 
-// Top 5 organizatori cu cele mai multe evenimente
+// Top 5 organizers with most events
 $result = $conn->query("
     SELECT u.id, u.username, COUNT(e.id) as events_count
     FROM users u
@@ -64,7 +64,7 @@ while ($row = $result->fetch_assoc()) {
     $stats['top_organizers'][] = $row;
 }
 
-// Evenimente pe lun (ultimele 6 luni)
+// Events by month (last 6 months)
 $result = $conn->query("
     SELECT
         DATE_FORMAT(created_at, '%Y-%m') as month,
@@ -79,7 +79,7 @@ while ($row = $result->fetch_assoc()) {
     $stats['events_by_month'][$row['month']] = $row['count'];
 }
 
-// Înregistrri pe lun (ultimele 6 luni)
+// Registrations by month (last 6 months)
 $result = $conn->query("
     SELECT
         DATE_FORMAT(created_at, '%Y-%m') as month,
@@ -94,7 +94,7 @@ while ($row = $result->fetch_assoc()) {
     $stats['registrations_by_month'][$row['month']] = $row['count'];
 }
 
-// Rata de participare medie
+// Average participation rate
 $result = $conn->query("
     SELECT
         AVG(registrations_count) as avg_registrations
@@ -107,7 +107,7 @@ $result = $conn->query("
 ");
 $stats['avg_registrations'] = round($result->fetch_assoc()['avg_registrations'], 2);
 
-// Procent evenimente complete
+// Percentage of full events
 $result = $conn->query("
     SELECT
         SUM(CASE WHEN registrations_count >= max_participants AND max_participants > 0 THEN 1 ELSE 0 END) as full_events,
@@ -133,27 +133,27 @@ $stats['full_events_percent'] = $full_events_data['total_events'] > 0
         <div class="mb-4">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
-                    <h2 class="mb-2">Statistici detaliate</h2>
-                    <p class="text-muted">Analiz i rapoarte despre platform</p>
+                    <h2 class="mb-2">Detailed statistics</h2>
+                    <p class="text-muted">Platform analysis and reports</p>
                 </div>
-                <a href="/admin/dashboard.php" class="btn btn-secondary">Înapoi la Dashboard</a>
+                <a href="/admin/dashboard.php" class="btn btn-secondary">Back to Dashboard</a>
             </div>
         </div>
 
-        <!-- Statistici principale -->
+        <!-- Main statistics -->
         <div class="row mb-4">
             <div class="col-md-6 mb-4">
                 <div class="bg-white p-4 rounded shadow h-100">
-                    <h5 class="mb-3">Utilizatori pe rol</h5>
+                    <h5 class="mb-3">Users by role</h5>
                     <?php if (empty($stats['users_by_role'])): ?>
-                        <p class="text-muted">Nu exist date disponibile</p>
+                        <p class="text-muted">No data available</p>
                     <?php else: ?>
                         <div class="table-responsive">
                             <table class="table">
                                 <thead>
                                     <tr>
-                                        <th>Rol</th>
-                                        <th class="text-end">Numr</th>
+                                        <th>Role</th>
+                                        <th class="text-end">Count</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -176,16 +176,16 @@ $stats['full_events_percent'] = $full_events_data['total_events'] > 0
 
             <div class="col-md-6 mb-4">
                 <div class="bg-white p-4 rounded shadow h-100">
-                    <h5 class="mb-3">Evenimente pe categorie</h5>
+                    <h5 class="mb-3">Events by category</h5>
                     <?php if (empty($stats['events_by_category'])): ?>
-                        <p class="text-muted">Nu exist date disponibile</p>
+                        <p class="text-muted">No data available</p>
                     <?php else: ?>
                         <div class="table-responsive">
                             <table class="table">
                                 <thead>
                                     <tr>
-                                        <th>Categorie</th>
-                                        <th class="text-end">Numr</th>
+                                        <th>Category</th>
+                                        <th class="text-end">Count</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -203,29 +203,29 @@ $stats['full_events_percent'] = $full_events_data['total_events'] > 0
             </div>
         </div>
 
-        <!-- Metrici importante -->
+        <!-- Important metrics -->
         <div class="row mb-4">
             <div class="col-md-6 mb-3">
                 <div class="bg-white p-4 rounded shadow text-center">
                     <h4 class="text-primary mb-2"><?php echo $stats['avg_registrations']; ?></h4>
-                    <p class="mb-0 text-muted">Medie participani per eveniment</p>
+                    <p class="mb-0 text-muted">Average participants per event</p>
                 </div>
             </div>
             <div class="col-md-6 mb-3">
                 <div class="bg-white p-4 rounded shadow text-center">
                     <h4 class="text-success mb-2"><?php echo $stats['full_events_percent']; ?>%</h4>
-                    <p class="mb-0 text-muted">Evenimente complete</p>
+                    <p class="mb-0 text-muted">Full events</p>
                 </div>
             </div>
         </div>
 
-        <!-- Top evenimente -->
+        <!-- Top events -->
         <div class="row mb-4">
             <div class="col-lg-6 mb-4">
                 <div class="bg-white p-4 rounded shadow">
-                    <h5 class="mb-3">Top 5 evenimente populare</h5>
+                    <h5 class="mb-3">Top 5 popular events</h5>
                     <?php if (empty($stats['top_events'])): ?>
-                        <p class="text-muted">Nu exist date disponibile</p>
+                        <p class="text-muted">No data available</p>
                     <?php else: ?>
                         <div class="list-group">
                             <?php foreach ($stats['top_events'] as $index => $event): ?>
@@ -241,7 +241,7 @@ $stats['full_events_percent'] = $full_events_data['total_events'] > 0
                                             </small>
                                         </div>
                                         <span class="badge bg-success">
-                                            <?php echo $event['registrations_count']; ?> participani
+                                            <?php echo $event['registrations_count']; ?> participants
                                         </span>
                                     </div>
                                 </div>
@@ -253,9 +253,9 @@ $stats['full_events_percent'] = $full_events_data['total_events'] > 0
 
             <div class="col-lg-6 mb-4">
                 <div class="bg-white p-4 rounded shadow">
-                    <h5 class="mb-3">Top 5 organizatori activi</h5>
+                    <h5 class="mb-3">Top 5 active organizers</h5>
                     <?php if (empty($stats['top_organizers'])): ?>
-                        <p class="text-muted">Nu exist date disponibile</p>
+                        <p class="text-muted">No data available</p>
                     <?php else: ?>
                         <div class="list-group">
                             <?php foreach ($stats['top_organizers'] as $index => $organizer): ?>
@@ -266,7 +266,7 @@ $stats['full_events_percent'] = $full_events_data['total_events'] > 0
                                             <strong><?php echo htmlspecialchars($organizer['username']); ?></strong>
                                         </div>
                                         <span class="badge bg-info">
-                                            <?php echo $organizer['events_count']; ?> evenimente
+                                            <?php echo $organizer['events_count']; ?> events
                                         </span>
                                     </div>
                                 </div>
@@ -277,21 +277,21 @@ $stats['full_events_percent'] = $full_events_data['total_events'] > 0
             </div>
         </div>
 
-        <!-- Grafice temporale -->
+        <!-- Temporal charts -->
         <div class="row">
             <div class="col-lg-6 mb-4">
                 <div class="bg-white p-4 rounded shadow">
-                    <h5 class="mb-3">Evenimente create (ultimele 6 luni)</h5>
+                    <h5 class="mb-3">Events created (last 6 months)</h5>
                     <?php if (empty($stats['events_by_month'])): ?>
-                        <p class="text-muted text-center py-4">Nu exist date disponibile</p>
+                        <p class="text-muted text-center py-4">No data available</p>
                     <?php else: ?>
                         <div class="table-responsive">
                             <table class="table table-sm">
                                 <thead>
                                     <tr>
-                                        <th>Lun</th>
-                                        <th>Evenimente</th>
-                                        <th>Grafic</th>
+                                        <th>Month</th>
+                                        <th>Events</th>
+                                        <th>Chart</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -321,17 +321,17 @@ $stats['full_events_percent'] = $full_events_data['total_events'] > 0
 
             <div class="col-lg-6 mb-4">
                 <div class="bg-white p-4 rounded shadow">
-                    <h5 class="mb-3">Înregistrri (ultimele 6 luni)</h5>
+                    <h5 class="mb-3">Registrations (last 6 months)</h5>
                     <?php if (empty($stats['registrations_by_month'])): ?>
-                        <p class="text-muted text-center py-4">Nu exist date disponibile</p>
+                        <p class="text-muted text-center py-4">No data available</p>
                     <?php else: ?>
                         <div class="table-responsive">
                             <table class="table table-sm">
                                 <thead>
                                     <tr>
-                                        <th>Lun</th>
-                                        <th>Înregistrri</th>
-                                        <th>Grafic</th>
+                                        <th>Month</th>
+                                        <th>Registrations</th>
+                                        <th>Chart</th>
                                     </tr>
                                 </thead>
                                 <tbody>

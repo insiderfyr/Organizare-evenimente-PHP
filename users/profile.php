@@ -5,7 +5,7 @@ require_once '../db/db_connect.php';
 
 $user_id = get_user_id();
 
-// Preia informații user
+// Get user information
 $stmt = $conn->prepare("SELECT username, email, role, created_at FROM users WHERE id = ?");
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
@@ -13,7 +13,7 @@ $result = $stmt->get_result();
 $user = $result->fetch_assoc();
 $stmt->close();
 
-// Dacă user-ul e organizer/admin, preia evenimentele create
+// If user is organizer/admin, get created events
 $my_events = [];
 if ($user['role'] === 'admin' || $user['role'] === 'organizer') {
     $stmt = $conn->prepare("SELECT id, title, date, location, max_participants, created_at FROM events WHERE organizer_id = ? ORDER BY date DESC");
@@ -26,7 +26,7 @@ if ($user['role'] === 'admin' || $user['role'] === 'organizer') {
     $stmt->close();
 }
 
-// Preia înregistrările utilizatorului
+// Get user registrations
 $my_registrations = [];
 $stmt = $conn->prepare("
     SELECT e.id, e.title, e.date, e.location, r.registration_date
@@ -51,7 +51,7 @@ $stmt->close();
         <div class="row">
             <div class="col-md-4">
                 <div class="bg-white p-4 rounded shadow mb-4">
-                    <h4 class="mb-3">Informații profil</h4>
+                    <h4 class="mb-3">Profile Information</h4>
                     <div class="mb-3">
                         <strong>Username:</strong>
                         <p class="mb-0"><?php echo htmlspecialchars($user['username']); ?></p>
@@ -61,45 +61,45 @@ $stmt->close();
                         <p class="mb-0"><?php echo htmlspecialchars($user['email']); ?></p>
                     </div>
                     <div class="mb-3">
-                        <strong>Rol:</strong>
+                        <strong>Role:</strong>
                         <p class="mb-0">
                             <?php
                             $role_labels = [
                                 'admin' => 'Administrator',
-                                'organizer' => 'Organizator',
-                                'user' => 'Utilizator'
+                                'organizer' => 'Organizer',
+                                'user' => 'User'
                             ];
                             echo htmlspecialchars($role_labels[$user['role']] ?? $user['role']);
                             ?>
                         </p>
                     </div>
                     <div class="mb-3">
-                        <strong>Membru din:</strong>
+                        <strong>Member since:</strong>
                         <p class="mb-0"><?php echo date('d.m.Y', strtotime($user['created_at'])); ?></p>
                     </div>
                 </div>
             </div>
 
             <div class="col-md-8">
-                <!-- Evenimente create (doar pentru organizer/admin) -->
+                <!-- Created events (only for organizer/admin) -->
                 <?php if ($user['role'] === 'admin' || $user['role'] === 'organizer'): ?>
                 <div class="bg-white p-4 rounded shadow mb-4">
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h4 class="mb-0">Evenimentele mele</h4>
-                        <a href="/events/create_event.php" class="btn btn-primary btn-sm">Creează eveniment</a>
+                        <h4 class="mb-0">My Events</h4>
+                        <a href="/events/create_event.php" class="btn btn-primary btn-sm">Create Event</a>
                     </div>
 
                     <?php if (empty($my_events)): ?>
-                        <p class="text-muted">Nu ai creat încă niciun eveniment.</p>
+                        <p class="text-muted">You haven't created any events yet.</p>
                     <?php else: ?>
                         <div class="table-responsive">
                             <table class="table table-hover">
                                 <thead>
                                     <tr>
-                                        <th>Titlu</th>
-                                        <th>Data</th>
-                                        <th>Locație</th>
-                                        <th>Acțiuni</th>
+                                        <th>Title</th>
+                                        <th>Date</th>
+                                        <th>Location</th>
+                                        <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -109,7 +109,7 @@ $stmt->close();
                                         <td><?php echo date('d.m.Y H:i', strtotime($event['date'])); ?></td>
                                         <td><?php echo htmlspecialchars($event['location']); ?></td>
                                         <td>
-                                            <a href="/events/view_event.php?id=<?php echo $event['id']; ?>" class="btn btn-sm btn-info">Detalii</a>
+                                            <a href="/events/view_event.php?id=<?php echo $event['id']; ?>" class="btn btn-sm btn-info">Details</a>
                                         </td>
                                     </tr>
                                     <?php endforeach; ?>
@@ -120,21 +120,21 @@ $stmt->close();
                 </div>
                 <?php endif; ?>
 
-                <!-- Înregistrări la evenimente -->
+                <!-- Event registrations -->
                 <div class="bg-white p-4 rounded shadow">
-                    <h4 class="mb-3">Înregistrările mele</h4>
+                    <h4 class="mb-3">My Registrations</h4>
 
                     <?php if (empty($my_registrations)): ?>
-                        <p class="text-muted">Nu ești înscris la niciun eveniment.</p>
+                        <p class="text-muted">You are not registered for any events.</p>
                     <?php else: ?>
                         <div class="table-responsive">
                             <table class="table table-hover">
                                 <thead>
                                     <tr>
-                                        <th>Eveniment</th>
-                                        <th>Data</th>
-                                        <th>Locație</th>
-                                        <th>Înscris la</th>
+                                        <th>Event</th>
+                                        <th>Date</th>
+                                        <th>Location</th>
+                                        <th>Registered on</th>
                                     </tr>
                                 </thead>
                                 <tbody>

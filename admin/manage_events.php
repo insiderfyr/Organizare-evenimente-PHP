@@ -3,7 +3,7 @@ require_once '../includes/auth_check.php';
 require_once '../includes/functions.php';
 require_once '../db/db_connect.php';
 
-// Verific dac user-ul este admin
+// Verify if user is admin
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     redirect('/index.php');
 }
@@ -11,33 +11,33 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
 $success = '';
 $error = '';
 
-// Procesare tergere eveniment
+// Process event deletion
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_event'])) {
     $event_id = (int)$_POST['event_id'];
 
-    // terge mai �nt�i toate �nregistrrile
+    // Delete all registrations first
     $stmt = $conn->prepare("DELETE FROM registrations WHERE event_id = ?");
     $stmt->bind_param("i", $event_id);
     $stmt->execute();
     $stmt->close();
 
-    // Apoi terge evenimentul
+    // Then delete the event
     $stmt = $conn->prepare("DELETE FROM events WHERE id = ?");
     $stmt->bind_param("i", $event_id);
 
     if ($stmt->execute()) {
-        $success = "Eveniment ters cu succes!";
+        $success = "Event deleted successfully!";
     } else {
-        $error = "Eroare la tergerea evenimentului!";
+        $error = "Error deleting event!";
     }
     $stmt->close();
 }
 
-// Filtre
+// Filters
 $status_filter = isset($_GET['status']) ? sanitize($_GET['status']) : 'all';
 $search_filter = isset($_GET['search']) ? sanitize($_GET['search']) : '';
 
-// Construire query
+// Build query
 $query = "
     SELECT
         e.id, e.title, e.date, e.location, e.category, e.max_participants,
@@ -51,7 +51,7 @@ $query = "
 $params = [];
 $types = '';
 
-// Aplicare filtre
+// Apply filters
 if (!empty($search_filter)) {
     $query .= " AND (e.title LIKE ? OR e.location LIKE ?)";
     $search_param = '%' . $search_filter . '%';
@@ -68,7 +68,7 @@ if ($status_filter === 'upcoming') {
 
 $query .= " ORDER BY e.date DESC";
 
-// Execuie query
+// Execute query
 $stmt = $conn->prepare($query);
 if (!empty($params)) {
     $stmt->bind_param($types, ...$params);
@@ -88,8 +88,8 @@ $stmt->close();
 <section class="py-5" style="background-color: #f9fafb; min-height: 80vh;">
     <div class="container">
         <div class="mb-4">
-            <h2 class="mb-2">Gestionare evenimente</h2>
-            <p class="text-muted">Administrare evenimente din sistem</p>
+            <h2 class="mb-2">Event management</h2>
+            <p class="text-muted">Manage events in system</p>
         </div>
 
         <?php if (!empty($success)): ?>
@@ -106,35 +106,35 @@ $stmt->close();
             </div>
         <?php endif; ?>
 
-        <!-- Filtre -->
+        <!-- Filters -->
         <div class="bg-white p-4 rounded shadow mb-4">
             <form method="GET" action="" class="row g-3">
                 <div class="col-md-6">
-                    <label for="search" class="form-label">Caut</label>
+                    <label for="search" class="form-label">Search</label>
                     <input type="text" class="form-control" id="search" name="search"
-                           placeholder="Titlu sau locaie..."
+                           placeholder="Title or location..."
                            value="<?php echo htmlspecialchars($search_filter); ?>">
                 </div>
                 <div class="col-md-4">
                     <label for="status" class="form-label">Status</label>
                     <select class="form-control" id="status" name="status">
-                        <option value="all" <?php echo $status_filter === 'all' ? 'selected' : ''; ?>>Toate</option>
-                        <option value="upcoming" <?php echo $status_filter === 'upcoming' ? 'selected' : ''; ?>>Viitoare</option>
-                        <option value="past" <?php echo $status_filter === 'past' ? 'selected' : ''; ?>>Trecute</option>
+                        <option value="all" <?php echo $status_filter === 'all' ? 'selected' : ''; ?>>All</option>
+                        <option value="upcoming" <?php echo $status_filter === 'upcoming' ? 'selected' : ''; ?>>Upcoming</option>
+                        <option value="past" <?php echo $status_filter === 'past' ? 'selected' : ''; ?>>Past</option>
                     </select>
                 </div>
                 <div class="col-md-2 d-flex align-items-end">
-                    <button type="submit" class="btn btn-primary w-100">Filtreaz</button>
+                    <button type="submit" class="btn btn-primary w-100">Filter</button>
                 </div>
             </form>
         </div>
 
-        <!-- Statistici rapide -->
+        <!-- Quick statistics -->
         <div class="row mb-4">
             <div class="col-md-4 mb-3">
                 <div class="bg-white p-3 rounded shadow text-center">
                     <h4 class="text-primary mb-0"><?php echo count($events); ?></h4>
-                    <small class="text-muted">Evenimente afiate</small>
+                    <small class="text-muted">Events displayed</small>
                 </div>
             </div>
             <div class="col-md-4 mb-3">
@@ -146,7 +146,7 @@ $stmt->close();
                     }
                     ?>
                     <h4 class="text-success mb-0"><?php echo $total_registrations; ?></h4>
-                    <small class="text-muted">Total �nregistrri</small>
+                    <small class="text-muted">Total registrations</small>
                 </div>
             </div>
             <div class="col-md-4 mb-3">
@@ -160,7 +160,7 @@ $stmt->close();
                     }
                     ?>
                     <h4 class="text-info mb-0"><?php echo $upcoming_count; ?></h4>
-                    <small class="text-muted">Evenimente viitoare</small>
+                    <small class="text-muted">Upcoming events</small>
                 </div>
             </div>
         </div>
@@ -168,14 +168,14 @@ $stmt->close();
         <div class="bg-white rounded shadow">
             <div class="p-4">
                 <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h5 class="mb-0">List evenimente</h5>
-                    <a href="/admin/dashboard.php" class="btn btn-sm btn-secondary">�napoi la Dashboard</a>
+                    <h5 class="mb-0">Event list</h5>
+                    <a href="/admin/dashboard.php" class="btn btn-sm btn-secondary">Back to Dashboard</a>
                 </div>
 
                 <?php if (empty($events)): ?>
                     <div class="text-center py-5">
                         <i class="bi bi-calendar-x" style="font-size: 4rem; color: #ccc;"></i>
-                        <h5 class="mt-3 text-muted">Nu exist evenimente</h5>
+                        <h5 class="mt-3 text-muted">No events found</h5>
                     </div>
                 <?php else: ?>
                     <div class="table-responsive">
@@ -183,14 +183,14 @@ $stmt->close();
                             <thead>
                                 <tr>
                                     <th>ID</th>
-                                    <th>Titlu</th>
-                                    <th>Dat</th>
-                                    <th>Locaie</th>
-                                    <th>Organizator</th>
-                                    <th>Categorie</th>
-                                    <th>Participani</th>
+                                    <th>Title</th>
+                                    <th>Date</th>
+                                    <th>Location</th>
+                                    <th>Organizer</th>
+                                    <th>Category</th>
+                                    <th>Participants</th>
                                     <th>Status</th>
-                                    <th>Aciuni</th>
+                                    <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -225,53 +225,53 @@ $stmt->close();
                                         </td>
                                         <td>
                                             <?php if ($is_past): ?>
-                                                <span class="badge bg-secondary">Trecut</span>
+                                                <span class="badge bg-secondary">Past</span>
                                             <?php elseif ($is_full): ?>
-                                                <span class="badge bg-danger">Complet</span>
+                                                <span class="badge bg-danger">Full</span>
                                             <?php else: ?>
-                                                <span class="badge bg-success">Activ</span>
+                                                <span class="badge bg-success">Active</span>
                                             <?php endif; ?>
                                         </td>
                                         <td>
                                             <div class="btn-group">
                                                 <a href="/events/view_event.php?id=<?php echo $event['id']; ?>"
-                                                   class="btn btn-sm btn-primary" title="Detalii">
+                                                   class="btn btn-sm btn-primary" title="Details">
                                                     <i class="bi bi-eye"></i>
                                                 </a>
                                                 <a href="/events/edit_event.php?id=<?php echo $event['id']; ?>"
-                                                   class="btn btn-sm btn-warning" title="Editeaz">
+                                                   class="btn btn-sm btn-warning" title="Edit">
                                                     <i class="bi bi-pencil"></i>
                                                 </a>
                                                 <button type="button" class="btn btn-sm btn-danger"
                                                         data-bs-toggle="modal"
                                                         data-bs-target="#deleteModal<?php echo $event['id']; ?>"
-                                                        title="terge">
+                                                        title="Delete">
                                                     <i class="bi bi-trash"></i>
                                                 </button>
                                             </div>
 
-                                            <!-- Modal tergere -->
+                                            <!-- Delete modal -->
                                             <div class="modal fade" id="deleteModal<?php echo $event['id']; ?>" tabindex="-1">
                                                 <div class="modal-dialog">
                                                     <div class="modal-content">
                                                         <div class="modal-header">
-                                                            <h5 class="modal-title">Confirmare tergere</h5>
+                                                            <h5 class="modal-title">Confirm deletion</h5>
                                                             <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                                         </div>
                                                         <form method="POST" action="">
                                                             <div class="modal-body">
                                                                 <input type="hidden" name="event_id" value="<?php echo $event['id']; ?>">
-                                                                <p>Eti sigur c vrei s tergi evenimentul <strong><?php echo htmlspecialchars($event['title']); ?></strong>?</p>
+                                                                <p>Are you sure you want to delete event <strong><?php echo htmlspecialchars($event['title']); ?></strong>?</p>
                                                                 <?php if ($event['registrations_count'] > 0): ?>
                                                                     <p class="text-danger">
                                                                         <i class="bi bi-exclamation-triangle"></i>
-                                                                        Acest eveniment are <?php echo $event['registrations_count']; ?> participani �nregistrai!
+                                                                        This event has <?php echo $event['registrations_count']; ?> registered participants!
                                                                     </p>
                                                                 <?php endif; ?>
                                                             </div>
                                                             <div class="modal-footer">
-                                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anuleaz</button>
-                                                                <button type="submit" name="delete_event" class="btn btn-danger">terge</button>
+                                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                                <button type="submit" name="delete_event" class="btn btn-danger">Delete</button>
                                                             </div>
                                                         </form>
                                                     </div>

@@ -1,4 +1,5 @@
 <?php
+header('Content-Type: text/html; charset=UTF-8');
 require_once '../includes/functions.php';
 require_once '../db/db_connect.php';
 
@@ -19,10 +20,10 @@ $event_id = (int)$_GET['id'];
 $success = '';
 $error = '';
 
-// Procesare �nregistrare/anulare
+// Procesare înregistrare/anulare
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $is_logged_in) {
     if (isset($_POST['register'])) {
-        // Verific dac evenimentul este plin
+        // Verific dacă evenimentul este plin
         $stmt = $conn->prepare("
             SELECT e.max_participants, COUNT(r.id) as current_registrations
             FROM events e
@@ -42,30 +43,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $is_logged_in) {
         if ($is_full) {
             $error = "Evenimentul este plin!";
         } else {
-            // �nregistrare la eveniment
+            // Înregistrare la eveniment
             $stmt = $conn->prepare("INSERT INTO registrations (user_id, event_id) VALUES (?, ?)");
             $stmt->bind_param("ii", $user_id, $event_id);
 
             if ($stmt->execute()) {
-                $success = "Te-ai �nregistrat cu succes la eveniment!";
+                $success = "Te-ai înregistrat cu succes la eveniment!";
             } else {
                 if ($conn->errno === 1062) {
-                    $error = "Eti deja �nregistrat la acest eveniment!";
+                    $error = "Ești deja înregistrat la acest eveniment!";
                 } else {
-                    $error = "Eroare la �nregistrare!";
+                    $error = "Eroare la înregistrare!";
                 }
             }
             $stmt->close();
         }
     } elseif (isset($_POST['unregister'])) {
-        // Anulare �nregistrare
+        // Anulare înregistrare
         $stmt = $conn->prepare("DELETE FROM registrations WHERE user_id = ? AND event_id = ?");
         $stmt->bind_param("ii", $user_id, $event_id);
 
         if ($stmt->execute()) {
-            $success = "Ai anulat �nregistrarea cu succes!";
+            $success = "Ai anulat înregistrarea cu succes!";
         } else {
-            $error = "Eroare la anularea �nregistrrii!";
+            $error = "Eroare la anularea înregistrării!";
         }
         $stmt->close();
     }
@@ -91,7 +92,7 @@ if (!$event) {
     redirect('/events/list_events.php');
 }
 
-// Verific dac utilizatorul este �nregistrat
+// Verific dacă utilizatorul este înregistrat
 $is_registered = false;
 if ($is_logged_in) {
     $stmt = $conn->prepare("SELECT id FROM registrations WHERE user_id = ? AND event_id = ?");
@@ -102,7 +103,7 @@ if ($is_logged_in) {
     $stmt->close();
 }
 
-// Numr participani
+// Număr participanți
 $stmt = $conn->prepare("SELECT COUNT(*) as count FROM registrations WHERE event_id = ?");
 $stmt->bind_param("i", $event_id);
 $stmt->execute();
@@ -110,14 +111,14 @@ $result = $stmt->get_result();
 $registrations_count = $result->fetch_assoc()['count'];
 $stmt->close();
 
-// Lista participanilor
+// Lista participanților
 $participants = [];
 $stmt = $conn->prepare("
-    SELECT u.id, u.username, u.email, r.created_at as registration_date
+    SELECT u.id, u.username, u.email, r.registration_date
     FROM registrations r
     JOIN users u ON r.user_id = u.id
     WHERE r.event_id = ?
-    ORDER BY r.created_at DESC
+    ORDER BY r.registration_date DESC
 ");
 $stmt->bind_param("i", $event_id);
 $stmt->execute();
@@ -127,7 +128,7 @@ while ($row = $result->fetch_assoc()) {
 }
 $stmt->close();
 
-// Verificri
+// Verificări
 $is_past = strtotime($event['date']) < time();
 $is_full = $event['max_participants'] > 0 && $registrations_count >= $event['max_participants'];
 $is_organizer = $is_logged_in && ($event['organizer_id'] == $user_id || $user_role === 'admin');
@@ -139,7 +140,7 @@ $is_organizer = $is_logged_in && ($event['organizer_id'] == $user_id || $user_ro
     <div class="container">
         <div class="mb-4">
             <a href="/events/list_events.php" class="btn btn-sm btn-outline-secondary mb-3">
-                <i class="bi bi-arrow-left"></i> �napoi la evenimente
+                <i class="bi bi-arrow-left"></i> Înapoi la evenimente
             </a>
         </div>
 
@@ -176,12 +177,12 @@ $is_organizer = $is_logged_in && ($event['organizer_id'] == $user_id || $user_ro
                         <?php if ($is_organizer): ?>
                             <div class="btn-group">
                                 <a href="/events/edit_event.php?id=<?php echo $event['id']; ?>" class="btn btn-warning">
-                                    <i class="bi bi-pencil"></i> Editeaz
+                                    <i class="bi bi-pencil"></i> Editează
                                 </a>
                                 <a href="/events/delete_event.php?id=<?php echo $event['id']; ?>"
                                    class="btn btn-danger"
-                                   onclick="return confirm('Sigur vrei s tergi acest eveniment?');">
-                                    <i class="bi bi-trash"></i> terge
+                                   onclick="return confirm('Sigur vrei să ștergi acest eveniment?');">
+                                    <i class="bi bi-trash"></i> Șterge
                                 </a>
                             </div>
                         <?php endif; ?>
@@ -199,7 +200,7 @@ $is_organizer = $is_logged_in && ($event['organizer_id'] == $user_id || $user_ro
                             <div class="d-flex align-items-center">
                                 <i class="bi bi-calendar text-primary me-3" style="font-size: 1.5rem;"></i>
                                 <div>
-                                    <small class="text-muted">Data i ora</small>
+                                    <small class="text-muted">Data și ora</small>
                                     <div><?php echo date('d.m.Y, H:i', strtotime($event['date'])); ?></div>
                                 </div>
                             </div>
@@ -208,7 +209,7 @@ $is_organizer = $is_logged_in && ($event['organizer_id'] == $user_id || $user_ro
                             <div class="d-flex align-items-center">
                                 <i class="bi bi-geo-alt text-danger me-3" style="font-size: 1.5rem;"></i>
                                 <div>
-                                    <small class="text-muted">Locaie</small>
+                                    <small class="text-muted">Locație</small>
                                     <div><?php echo htmlspecialchars($event['location']); ?></div>
                                 </div>
                             </div>
@@ -226,7 +227,7 @@ $is_organizer = $is_logged_in && ($event['organizer_id'] == $user_id || $user_ro
                             <div class="d-flex align-items-center">
                                 <i class="bi bi-people text-info me-3" style="font-size: 1.5rem;"></i>
                                 <div>
-                                    <small class="text-muted">Participani</small>
+                                    <small class="text-muted">Participanți</small>
                                     <div>
                                         <?php
                                         if ($event['max_participants'] > 0) {
@@ -241,13 +242,13 @@ $is_organizer = $is_logged_in && ($event['organizer_id'] == $user_id || $user_ro
                         </div>
                     </div>
 
-                    <!-- Aciuni pentru utilizatori -->
+                    <!-- Acțiuni pentru utilizatori -->
                     <?php if ($is_logged_in && !$is_organizer): ?>
                         <div class="mt-4">
                             <?php if ($is_registered): ?>
                                 <form method="POST" action="">
                                     <button type="submit" name="unregister" class="btn btn-danger btn-lg w-100">
-                                        <i class="bi bi-x-circle"></i> Anuleaz �nregistrarea
+                                        <i class="bi bi-x-circle"></i> Anulează înregistrarea
                                     </button>
                                 </form>
                             <?php elseif ($is_past): ?>
@@ -261,7 +262,7 @@ $is_organizer = $is_logged_in && ($event['organizer_id'] == $user_id || $user_ro
                             <?php else: ?>
                                 <form method="POST" action="">
                                     <button type="submit" name="register" class="btn btn-success btn-lg w-100">
-                                        <i class="bi bi-check-circle"></i> �nregistreaz-te
+                                        <i class="bi bi-check-circle"></i> Înregistrează-te
                                     </button>
                                 </form>
                             <?php endif; ?>
@@ -269,21 +270,21 @@ $is_organizer = $is_logged_in && ($event['organizer_id'] == $user_id || $user_ro
                     <?php elseif (!$is_logged_in): ?>
                         <div class="alert alert-info mt-4">
                             <i class="bi bi-info-circle"></i>
-                            Trebuie s fii autentificat pentru a te �nregistra la acest eveniment.
-                            <a href="/login.php" class="alert-link">Autentific-te acum</a>
+                            Trebuie să fii autentificat pentru a te înregistra la acest eveniment.
+                            <a href="/login.php" class="alert-link">Autentifică-te acum</a>
                         </div>
                     <?php endif; ?>
                 </div>
             </div>
 
-            <!-- Sidebar cu participani -->
+            <!-- Sidebar cu participanți -->
             <div class="col-lg-4 mb-4">
                 <div class="bg-white p-4 rounded shadow">
-                    <h5 class="mb-3">Participani (<?php echo count($participants); ?>)</h5>
+                    <h5 class="mb-3">Participanți (<?php echo count($participants); ?>)</h5>
                     <?php if (empty($participants)): ?>
                         <p class="text-muted text-center py-4">
                             <i class="bi bi-people" style="font-size: 2rem;"></i><br>
-                            Nu exist participani �nregistrai �nc.
+                            Nu există participanți înregistrați încă.
                         </p>
                     <?php else: ?>
                         <div class="list-group">
@@ -296,7 +297,7 @@ $is_organizer = $is_logged_in && ($event['organizer_id'] == $user_id || $user_ro
                                         <div class="flex-grow-1">
                                             <h6 class="mb-0"><?php echo htmlspecialchars($participant['username']); ?></h6>
                                             <small class="text-muted">
-                                                �nregistrat: <?php echo date('d.m.Y', strtotime($participant['registration_date'])); ?>
+                                                Înregistrat: <?php echo date('d.m.Y', strtotime($participant['registration_date'])); ?>
                                             </small>
                                         </div>
                                     </div>

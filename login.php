@@ -58,7 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 <?php if (isset($error) && !empty($error)): ?>
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        <?php echo $error; ?>
+                        <?php echo htmlspecialchars($error); ?>
                         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
                 <?php endif; ?>
@@ -67,7 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="mb-3">
                         <label for="username" class="form-label">Username sau Email</label>
                         <input type="text" class="form-control" id="username" name="username"
-                               value="<?php echo isset($username_or_email) ? $username_or_email : ''; ?>" required>
+                               value="<?php echo isset($username_or_email) ? htmlspecialchars($username_or_email) : ''; ?>" required>
                     </div>
 
                     <div class="mb-3">

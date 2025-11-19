@@ -24,6 +24,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = "Parolele nu coincid!";
     }else if (strlen($username) < 3) {
         $error = "Username-ul trebuie să aibă minim 3 caractere!";
+    }else if (strlen($password) < 6) {
+        $error = "Parola trebuie să aibă minim 6 caractere!";
     } else {
         $stmt = $conn->prepare("SELECT id FROM users WHERE username = ? OR email = ?");
         $stmt->bind_param("ss", $username, $email);
@@ -66,7 +68,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 <?php if (isset($error) && !empty($error)): ?>
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        <?php echo $error; ?>
+                        <?php echo htmlspecialchars($error); ?>
                         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
                 <?php endif; ?>
@@ -75,13 +77,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="mb-3">
                         <label for="username" class="form-label">Username</label>
                         <input type="text" class="form-control" id="username" name="username"
-                               value="<?php echo isset($username) ? $username : ''; ?>" required>
+                               value="<?php echo isset($username) ? htmlspecialchars($username) : ''; ?>" required>
                     </div>
 
                     <div class="mb-3">
                         <label for="email" class="form-label">Email</label>
                         <input type="email" class="form-control" id="email" name="email"
-                               value="<?php echo isset($email) ? $email : ''; ?>" required>
+                               value="<?php echo isset($email) ? htmlspecialchars($email) : ''; ?>" required>
                     </div>
 
                     <div class="mb-3">

@@ -3,7 +3,7 @@ require_once '../includes/auth_check.php';
 require_once '../includes/functions.php';
 require_once '../db/db_connect.php';
 
-// Verific dac user-ul are rol de organizer sau admin
+// Verifică dacă user-ul are rol de organizer sau admin
 if (!isset($_SESSION['role']) || ($_SESSION['role'] !== 'admin' && $_SESSION['role'] !== 'organizer')) {
     redirect('/index.php');
 }
@@ -22,11 +22,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Validare
     if (empty($title) || empty($description) || empty($date) || empty($location)) {
-        $error = "Toate c�mpurile obligatorii trebuie completate!";
+        $error = "Toate câmpurile obligatorii trebuie completate!";
     } else if ($max_participants < 0) {
-        $error = "Numrul maxim de participani nu poate fi negativ!";
+        $error = "Numărul maxim de participanți nu poate fi negativ!";
     } else {
-        // Salveaz evenimentul
+        // Salvează evenimentul
         $stmt = $conn->prepare("INSERT INTO events (title, description, date, location, category, max_participants, organizer_id) VALUES (?, ?, ?, ?, ?, ?, ?)");
         $stmt->bind_param("sssssis", $title, $description, $date, $location, $category, $max_participants, $organizer_id);
 
@@ -50,8 +50,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="row justify-content-center">
             <div class="col-md-8">
                 <div class="mb-4">
-                    <h2 class="mb-2">Creeaz eveniment nou</h2>
-                    <p class="text-muted">Completeaz detaliile evenimentului</p>
+                    <h2 class="mb-2">Creează eveniment nou</h2>
+                    <p class="text-muted">Completează detaliile evenimentului</p>
                 </div>
 
                 <?php if (!empty($success)): ?>
@@ -81,13 +81,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
 
                     <div class="mb-3">
-                        <label for="date" class="form-label">Data i ora *</label>
+                        <label for="date" class="form-label">Data și ora *</label>
                         <input type="datetime-local" class="form-control" id="date" name="date"
                                value="<?php echo isset($date) ? htmlspecialchars($date) : ''; ?>" required>
                     </div>
 
                     <div class="mb-3">
-                        <label for="location" class="form-label">Locaie *</label>
+                        <label for="location" class="form-label">Locație *</label>
                         <input type="text" class="form-control" id="location" name="location"
                                value="<?php echo isset($location) ? htmlspecialchars($location) : ''; ?>" required>
                     </div>
@@ -95,9 +95,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="mb-3">
                         <label for="category" class="form-label">Categorie</label>
                         <select class="form-control" id="category" name="category">
-                            <option value="">-- Selecteaz categorie --</option>
+                            <option value="">-- Selectează categorie --</option>
                             <option value="Workshop" <?php echo (isset($category) && $category === 'Workshop') ? 'selected' : ''; ?>>Workshop</option>
-                            <option value="Conference" <?php echo (isset($category) && $category === 'Conference') ? 'selected' : ''; ?>>Conferin</option>
+                            <option value="Conference" <?php echo (isset($category) && $category === 'Conference') ? 'selected' : ''; ?>>Conferință</option>
                             <option value="Seminar" <?php echo (isset($category) && $category === 'Seminar') ? 'selected' : ''; ?>>Seminar</option>
                             <option value="Meetup" <?php echo (isset($category) && $category === 'Meetup') ? 'selected' : ''; ?>>Meetup</option>
                             <option value="Other" <?php echo (isset($category) && $category === 'Other') ? 'selected' : ''; ?>>Altele</option>
@@ -105,15 +105,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
 
                     <div class="mb-3">
-                        <label for="max_participants" class="form-label">Numr maxim de participani</label>
+                        <label for="max_participants" class="form-label">Număr maxim de participanți</label>
                         <input type="number" class="form-control" id="max_participants" name="max_participants"
                                value="<?php echo isset($max_participants) ? (int)$max_participants : 0; ?>" min="0">
                         <small class="text-muted">0 = nelimitat</small>
                     </div>
 
                     <div class="d-flex justify-content-between">
-                        <a href="/events/list_events.php" class="btn btn-secondary">Anuleaz</a>
-                        <button type="submit" class="btn btn-primary">Creeaz eveniment</button>
+                        <a href="/events/list_events.php" class="btn btn-secondary">Anulează</a>
+                        <button type="submit" class="btn btn-primary">Creează eveniment</button>
                     </div>
                 </form>
             </div>

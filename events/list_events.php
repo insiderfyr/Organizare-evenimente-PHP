@@ -53,7 +53,7 @@ if ($date_filter === 'upcoming') {
 
 $query .= " ORDER BY e.date ASC";
 
-// Execuie query
+// Execută query
 $stmt = $conn->prepare($query);
 if (!empty($params)) {
     $stmt->bind_param($types, ...$params);
@@ -76,11 +76,11 @@ $stmt->close();
             <div class="d-flex justify-content-between align-items-center">
                 <div>
                     <h2 class="mb-2">Evenimente</h2>
-                    <p class="text-muted">Descoper i particip la evenimente</p>
+                    <p class="text-muted">Descoperă și participă la evenimente</p>
                 </div>
                 <?php if ($is_logged_in && ($user_role === 'admin' || $user_role === 'organizer')): ?>
                     <a href="/events/create_event.php" class="btn btn-primary">
-                        <i class="bi bi-plus-circle"></i> Creeaz eveniment
+                        <i class="bi bi-plus-circle"></i> Creează eveniment
                     </a>
                 <?php endif; ?>
             </div>
@@ -90,9 +90,9 @@ $stmt->close();
         <div class="bg-white p-4 rounded shadow mb-4">
             <form method="GET" action="" class="row g-3">
                 <div class="col-md-4">
-                    <label for="search" class="form-label">Caut</label>
+                    <label for="search" class="form-label">Caută</label>
                     <input type="text" class="form-control" id="search" name="search"
-                           placeholder="Titlu, descriere sau locaie..."
+                           placeholder="Titlu, descriere sau locație..."
                            value="<?php echo htmlspecialchars($search_filter); ?>">
                 </div>
                 <div class="col-md-3">
@@ -100,14 +100,14 @@ $stmt->close();
                     <select class="form-control" id="category" name="category">
                         <option value="">Toate</option>
                         <option value="Workshop" <?php echo $category_filter === 'Workshop' ? 'selected' : ''; ?>>Workshop</option>
-                        <option value="Conference" <?php echo $category_filter === 'Conference' ? 'selected' : ''; ?>>Conferin</option>
+                        <option value="Conference" <?php echo $category_filter === 'Conference' ? 'selected' : ''; ?>>Conferință</option>
                         <option value="Seminar" <?php echo $category_filter === 'Seminar' ? 'selected' : ''; ?>>Seminar</option>
                         <option value="Meetup" <?php echo $category_filter === 'Meetup' ? 'selected' : ''; ?>>Meetup</option>
                         <option value="Other" <?php echo $category_filter === 'Other' ? 'selected' : ''; ?>>Altele</option>
                     </select>
                 </div>
                 <div class="col-md-3">
-                    <label for="date_filter" class="form-label">Perioad</label>
+                    <label for="date_filter" class="form-label">Perioadă</label>
                     <select class="form-control" id="date_filter" name="date_filter">
                         <option value="all" <?php echo $date_filter === 'all' ? 'selected' : ''; ?>>Toate</option>
                         <option value="upcoming" <?php echo $date_filter === 'upcoming' ? 'selected' : ''; ?>>Viitoare</option>
@@ -115,7 +115,7 @@ $stmt->close();
                     </select>
                 </div>
                 <div class="col-md-2 d-flex align-items-end">
-                    <button type="submit" class="btn btn-primary w-100">Filtreaz</button>
+                    <button type="submit" class="btn btn-primary w-100">Filtrează</button>
                 </div>
             </form>
         </div>
@@ -124,12 +124,12 @@ $stmt->close();
         <?php if (empty($events)): ?>
             <div class="bg-white p-5 rounded shadow text-center">
                 <i class="bi bi-calendar-x" style="font-size: 4rem; color: #ccc;"></i>
-                <h4 class="mt-3 text-muted">Nu exist evenimente</h4>
+                <h4 class="mt-3 text-muted">Nu există evenimente</h4>
                 <p class="text-muted">
                     <?php if (!empty($search_filter) || !empty($category_filter) || $date_filter !== 'all'): ?>
-                        �ncearc s modifici filtrele de cutare.
+                        Încearcă să modifici filtrele de căutare.
                     <?php else: ?>
-                        Nu exist evenimente disponibile momentan.
+                        Nu există evenimente disponibile momentan.
                     <?php endif; ?>
                 </p>
             </div>
@@ -187,9 +187,9 @@ $stmt->close();
                                         <i class="bi bi-people"></i>
                                         <?php
                                         if ($event['max_participants'] > 0) {
-                                            echo $event['registrations_count'] . ' / ' . $event['max_participants'] . ' participani';
+                                            echo $event['registrations_count'] . ' / ' . $event['max_participants'] . ' participanți';
                                         } else {
-                                            echo $event['registrations_count'] . ' participani';
+                                            echo $event['registrations_count'] . ' participanți';
                                         }
                                         ?>
                                     </small>
@@ -207,7 +207,7 @@ $stmt->close();
                                         </a>
                                         <a href="/events/delete_event.php?id=<?php echo $event['id']; ?>"
                                            class="btn btn-sm btn-danger"
-                                           onclick="return confirm('Sigur vrei s tergi acest eveniment?');">
+                                           onclick="return confirm('Sigur vrei să ștergi acest eveniment?');">
                                             <i class="bi bi-trash"></i>
                                         </a>
                                     <?php endif; ?>

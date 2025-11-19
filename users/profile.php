@@ -5,7 +5,7 @@ require_once '../db/db_connect.php';
 
 $user_id = get_user_id();
 
-// Preia informaii user
+// Preia informații user
 $stmt = $conn->prepare("SELECT username, email, role, created_at FROM users WHERE id = ?");
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
@@ -13,7 +13,7 @@ $result = $stmt->get_result();
 $user = $result->fetch_assoc();
 $stmt->close();
 
-// Dac user-ul e organizer/admin, preia evenimentele create
+// Dacă user-ul e organizer/admin, preia evenimentele create
 $my_events = [];
 if ($user['role'] === 'admin' || $user['role'] === 'organizer') {
     $stmt = $conn->prepare("SELECT id, title, date, location, max_participants, created_at FROM events WHERE organizer_id = ? ORDER BY date DESC");
@@ -26,7 +26,7 @@ if ($user['role'] === 'admin' || $user['role'] === 'organizer') {
     $stmt->close();
 }
 
-// Preia �nregistrrile utilizatorului
+// Preia înregistrările utilizatorului
 $my_registrations = [];
 $stmt = $conn->prepare("
     SELECT e.id, e.title, e.date, e.location, r.registration_date
@@ -51,7 +51,7 @@ $stmt->close();
         <div class="row">
             <div class="col-md-4">
                 <div class="bg-white p-4 rounded shadow mb-4">
-                    <h4 class="mb-3">Informaii profil</h4>
+                    <h4 class="mb-3">Informații profil</h4>
                     <div class="mb-3">
                         <strong>Username:</strong>
                         <p class="mb-0"><?php echo htmlspecialchars($user['username']); ?></p>
@@ -86,11 +86,11 @@ $stmt->close();
                 <div class="bg-white p-4 rounded shadow mb-4">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h4 class="mb-0">Evenimentele mele</h4>
-                        <a href="/events/create_event.php" class="btn btn-primary btn-sm">Creeaz eveniment</a>
+                        <a href="/events/create_event.php" class="btn btn-primary btn-sm">Creează eveniment</a>
                     </div>
 
                     <?php if (empty($my_events)): ?>
-                        <p class="text-muted">Nu ai creat �nc niciun eveniment.</p>
+                        <p class="text-muted">Nu ai creat încă niciun eveniment.</p>
                     <?php else: ?>
                         <div class="table-responsive">
                             <table class="table table-hover">
@@ -98,8 +98,8 @@ $stmt->close();
                                     <tr>
                                         <th>Titlu</th>
                                         <th>Data</th>
-                                        <th>Locaie</th>
-                                        <th>Aciuni</th>
+                                        <th>Locație</th>
+                                        <th>Acțiuni</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -120,12 +120,12 @@ $stmt->close();
                 </div>
                 <?php endif; ?>
 
-                <!-- �nregistrri la evenimente -->
+                <!-- Înregistrări la evenimente -->
                 <div class="bg-white p-4 rounded shadow">
-                    <h4 class="mb-3">�nregistrrile mele</h4>
+                    <h4 class="mb-3">Înregistrările mele</h4>
 
                     <?php if (empty($my_registrations)): ?>
-                        <p class="text-muted">Nu eti �nscris la niciun eveniment.</p>
+                        <p class="text-muted">Nu ești înscris la niciun eveniment.</p>
                     <?php else: ?>
                         <div class="table-responsive">
                             <table class="table table-hover">
@@ -133,8 +133,8 @@ $stmt->close();
                                     <tr>
                                         <th>Eveniment</th>
                                         <th>Data</th>
-                                        <th>Locaie</th>
-                                        <th>�nscris la</th>
+                                        <th>Locație</th>
+                                        <th>Înscris la</th>
                                     </tr>
                                 </thead>
                                 <tbody>

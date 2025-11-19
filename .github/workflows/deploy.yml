@@ -31,3 +31,7 @@ jobs:
           **/.idea/**
           *.md
           LICENSE
+          **/config/config.php
+          **/config/mail_config.php
+          **/uploads/**
+          **/sql/**

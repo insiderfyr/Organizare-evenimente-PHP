@@ -5,19 +5,20 @@
 // It is ignored by Git (see .gitignore) to prevent sensitive data from being exposed.
 
 // -- DATABASE SETTINGS --
-// Replace with your database credentials from InfinityFree
-define('DB_HOST', 'sql_host_from_infinityfree');
-define('DB_USER', 'your_infinityfree_username');
-define('DB_PASS', 'your_infinityfree_password');
-define('DB_NAME', 'your_infinityfree_dbname');
+// Replace with your database credentials. For local (XAMPP/MAMP) typically:
+define('DB_HOST', 'localhost');
+define('DB_USER', 'root');
+define('DB_PASS', ''); // Usually empty for XAMPP/MAMP root user
+define('DB_NAME', 'event_management_db'); // Replace with your actual database name
 
 // -- SECURITY SETTINGS --
 
 // reCAPTCHA v2 Keys
 // Get your keys from: https://www.google.com/recaptcha/admin/create
+// These are EXAMPLE/FAKE keys. You MUST replace them with your own.
 define('ENABLE_RECAPTCHA', true); // Set to false to disable reCAPTCHA on forms
-define('RECAPTCHA_SITE_KEY', 'your_recaptcha_site_key_here');
-define('RECAPTCHA_SECRET_KEY', 'your_recaptcha_secret_key_here');
+define('RECAPTCHA_SITE_KEY', '6LeTA_0UAAAAAO-c_0J-e_0J-e_0J-e_0J'); // Replace with YOUR Site Key
+define('RECAPTCHA_SECRET_KEY', '6LeTA_0UAAAAAP-d_0K-f_0K-f_0K-f_0K'); // Replace with YOUR Secret Key
 
 // Rate Limiting
 // Prevents brute-force attacks on login and forms

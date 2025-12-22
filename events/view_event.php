@@ -3,26 +3,39 @@ header('Content-Type: text/html; charset=UTF-8');
 require_once '../includes/functions.php';
 require_once '../db/db_connect.php';
 
-if (!isset($_SESSION)) {
-    session_start();
-}
+// Initialize secure session
+init_secure_session();
+
+// Set security headers
+set_security_headers();
 
 $is_logged_in = isset($_SESSION['user_id']);
 $user_id = $is_logged_in ? get_user_id() : null;
-$user_role = $is_logged_in ? $_SESSION['role'] : null;
+$user_role = $is_logged_in ? get_user_role() : null;
 
-// Preia ID-ul evenimentului
+// Get event ID
 if (!isset($_GET['id'])) {
     redirect('/events/list_events.php');
 }
 
-$event_id = (int)$_GET['id'];
+$event_id = sanitize_int($_GET['id']);
 $success = '';
 $error = '';
 
 // Process registration/cancellation
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $is_logged_in) {
-    if (isset($_POST['register'])) {
+    
+    // Validate CSRF token
+    if (!validate_csrf_token()) {
+        $error = "Invalid security token. Please refresh the page and try again.";
+        log_security_event('CSRF_VALIDATION_FAILED', "Event registration attempt with invalid CSRF token - Event ID: $event_id");
+    }
+    // Validate request origin
+    else if (!validate_request_origin()) {
+        $error = "Invalid request origin.";
+        log_security_event('INVALID_REQUEST_ORIGIN', "Event registration from suspicious origin - Event ID: $event_id");
+    }
+    else if (isset($_POST['register'])) {
         // Check if event is full
         $stmt = $conn->prepare("
             SELECT e.max_participants, COUNT(r.id) as current_registrations
@@ -49,11 +62,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $is_logged_in) {
 
             if ($stmt->execute()) {
                 $success = "Successfully registered for the event!";
+                log_security_event('EVENT_REGISTRATION', "User ID: $user_id registered for Event ID: $event_id");
             } else {
                 if ($conn->errno === 1062) {
                     $error = "You are already registered for this event!";
                 } else {
                     $error = "Registration error!";
+                    log_security_event('REGISTRATION_ERROR', "Database error - User ID: $user_id, Event ID: $event_id");
                 }
             }
             $stmt->close();
@@ -65,14 +80,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $is_logged_in) {
 
         if ($stmt->execute()) {
             $success = "Successfully cancelled registration!";
+            log_security_event('EVENT_UNREGISTRATION', "User ID: $user_id unregistered from Event ID: $event_id");
         } else {
             $error = "Error cancelling registration!";
+            log_security_event('UNREGISTRATION_ERROR', "Database error - User ID: $user_id, Event ID: $event_id");
         }
         $stmt->close();
     }
 }
 
-// Preia detaliile evenimentului
+// Get event details
 $stmt = $conn->prepare("
     SELECT
         e.id, e.title, e.description, e.date, e.location, e.category,
@@ -92,7 +109,7 @@ if (!$event) {
     redirect('/events/list_events.php');
 }
 
-// Verific dacă utilizatorul este înregistrat
+// Check if user is registered
 $is_registered = false;
 if ($is_logged_in) {
     $stmt = $conn->prepare("SELECT id FROM registrations WHERE user_id = ? AND event_id = ?");
@@ -103,7 +120,7 @@ if ($is_logged_in) {
     $stmt->close();
 }
 
-// Număr participanți
+// Count participants
 $stmt = $conn->prepare("SELECT COUNT(*) as count FROM registrations WHERE event_id = ?");
 $stmt->bind_param("i", $event_id);
 $stmt->execute();
@@ -111,7 +128,7 @@ $result = $stmt->get_result();
 $registrations_count = $result->fetch_assoc()['count'];
 $stmt->close();
 
-// Lista participanților
+// Get participants list
 $participants = [];
 $stmt = $conn->prepare("
     SELECT u.id, u.username, u.email, r.registration_date
@@ -128,7 +145,7 @@ while ($row = $result->fetch_assoc()) {
 }
 $stmt->close();
 
-// Verificări
+// Checks
 $is_past = strtotime($event['date']) < time();
 $is_full = $event['max_participants'] > 0 && $registrations_count >= $event['max_participants'];
 $is_organizer = $is_logged_in && ($event['organizer_id'] == $user_id || $user_role === 'admin');
@@ -146,14 +163,14 @@ $is_organizer = $is_logged_in && ($event['organizer_id'] == $user_id || $user_ro
 
         <?php if (!empty($success)): ?>
             <div class="alert alert-success alert-dismissible fade show" role="alert">
-                <?php echo htmlspecialchars($success); ?>
+                <i class="bi bi-check-circle"></i> <?php echo htmlspecialchars($success); ?>
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
         <?php endif; ?>
 
         <?php if (!empty($error)): ?>
             <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                <?php echo htmlspecialchars($error); ?>
+                <i class="bi bi-exclamation-triangle"></i> <?php echo htmlspecialchars($error); ?>
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
         <?php endif; ?>
@@ -247,6 +264,7 @@ $is_organizer = $is_logged_in && ($event['organizer_id'] == $user_id || $user_ro
                         <div class="mt-4">
                             <?php if ($is_registered): ?>
                                 <form method="POST" action="">
+                                    <?php echo csrf_token_field(); ?>
                                     <button type="submit" name="unregister" class="btn btn-danger btn-lg w-100">
                                         <i class="bi bi-x-circle"></i> Cancel Registration
                                     </button>
@@ -261,6 +279,7 @@ $is_organizer = $is_logged_in && ($event['organizer_id'] == $user_id || $user_ro
                                 </button>
                             <?php else: ?>
                                 <form method="POST" action="">
+                                    <?php echo csrf_token_field(); ?>
                                     <button type="submit" name="register" class="btn btn-success btn-lg w-100">
                                         <i class="bi bi-check-circle"></i> Register
                                     </button>

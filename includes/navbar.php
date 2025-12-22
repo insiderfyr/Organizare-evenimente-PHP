@@ -17,6 +17,9 @@ if (!isset($_SESSION)) {
                 <li class="nav-item">
                     <a class="nav-link" href="/events/list_events.php" style="color: #4b5563;">Events</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/contact/contact.php" style="color: #4b5563;">Contact</a>
+                </li>
 
                 <?php if (isset($_SESSION['user_id'])): ?>
                     <!-- Menu for logged in users -->

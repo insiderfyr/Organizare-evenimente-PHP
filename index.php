@@ -1,5 +1,12 @@
 <?php
-session_start();
+require_once 'includes/functions.php';
+
+// Initialize secure session
+init_secure_session();
+
+// Set security headers
+set_security_headers();
+
 include('includes/header.php');
 include('includes/navbar.php');
 ?>

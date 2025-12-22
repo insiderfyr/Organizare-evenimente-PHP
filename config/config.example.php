@@ -1,8 +1,5 @@
 <?php
-// PHP Configuration File - DO NOT COMMIT TO VERSION CONTROL
-
-// This file should be created manually on the server with the correct credentials.
-// It is ignored by Git (see .gitignore) to prevent sensitive data from being exposed.
+// PHP Configuration File - Example
 
 // -- DATABASE SETTINGS --
 // Replace with your database credentials from InfinityFree

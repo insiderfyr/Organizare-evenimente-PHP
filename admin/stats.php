@@ -11,32 +11,35 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
 // General statistics
 $stats = [];
 
-// Total users by role
-$result = $conn->query("
-    SELECT role, COUNT(*) as count
-    FROM users
-    GROUP BY role
-");
-$stats['users_by_role'] = [];
-while ($row = $result->fetch_assoc()) {
-    $stats['users_by_role'][$row['role']] = $row['count'];
+// Helper function to fetch all results from a prepared statement
+function fetch_all($conn, $query, $params = [], $types = "") {
+    $stmt = $conn->prepare($query);
+    if (!empty($params)) {
+        $stmt->bind_param($types, ...$params);
+    }
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $data = $result->fetch_all(MYSQLI_ASSOC);
+    $stmt->close();
+    return $data;
 }
 
+// Total users by role
+$users_by_role_data = fetch_all($conn, "SELECT role, COUNT(*) as count FROM users GROUP BY role");
+$stats['users_by_role'] = array_column($users_by_role_data, 'count', 'role');
+
 // Events by category
-$result = $conn->query("
+$events_by_category_data = fetch_all($conn, "
     SELECT category, COUNT(*) as count
     FROM events
     WHERE category IS NOT NULL AND category != ''
     GROUP BY category
     ORDER BY count DESC
 ");
-$stats['events_by_category'] = [];
-while ($row = $result->fetch_assoc()) {
-    $stats['events_by_category'][$row['category']] = $row['count'];
-}
+$stats['events_by_category'] = array_column($events_by_category_data, 'count', 'category');
 
 // Top 5 events with most registrations
-$result = $conn->query("
+$stats['top_events'] = fetch_all($conn, "
     SELECT e.id, e.title, e.date, COUNT(r.id) as registrations_count
     FROM events e
     LEFT JOIN registrations r ON e.id = r.event_id
@@ -44,13 +47,9 @@ $result = $conn->query("
     ORDER BY registrations_count DESC
     LIMIT 5
 ");
-$stats['top_events'] = [];
-while ($row = $result->fetch_assoc()) {
-    $stats['top_events'][] = $row;
-}
 
 // Top 5 organizers with most events
-$result = $conn->query("
+$stats['top_organizers'] = fetch_all($conn, "
     SELECT u.id, u.username, COUNT(e.id) as events_count
     FROM users u
     LEFT JOIN events e ON u.id = e.organizer_id
@@ -59,69 +58,55 @@ $result = $conn->query("
     ORDER BY events_count DESC
     LIMIT 5
 ");
-$stats['top_organizers'] = [];
-while ($row = $result->fetch_assoc()) {
-    $stats['top_organizers'][] = $row;
-}
 
 // Events by month (last 6 months)
-$result = $conn->query("
-    SELECT
-        DATE_FORMAT(created_at, '%Y-%m') as month,
-        COUNT(*) as count
+$six_months_ago = date('Y-m-d H:i:s', strtotime('-6 months'));
+$events_by_month_data = fetch_all($conn, "
+    SELECT DATE_FORMAT(created_at, '%Y-%m') as month, COUNT(*) as count
     FROM events
-    WHERE created_at >= DATE_SUB(NOW(), INTERVAL 6 MONTH)
+    WHERE created_at >= ?
     GROUP BY month
     ORDER BY month ASC
-");
-$stats['events_by_month'] = [];
-while ($row = $result->fetch_assoc()) {
-    $stats['events_by_month'][$row['month']] = $row['count'];
-}
+", [$six_months_ago], "s");
+$stats['events_by_month'] = array_column($events_by_month_data, 'count', 'month');
 
 // Registrations by month (last 6 months)
-$result = $conn->query("
-    SELECT
-        DATE_FORMAT(created_at, '%Y-%m') as month,
-        COUNT(*) as count
+$registrations_by_month_data = fetch_all($conn, "
+    SELECT DATE_FORMAT(created_at, '%Y-%m') as month, COUNT(*) as count
     FROM registrations
-    WHERE created_at >= DATE_SUB(NOW(), INTERVAL 6 MONTH)
+    WHERE created_at >= ?
     GROUP BY month
     ORDER BY month ASC
-");
-$stats['registrations_by_month'] = [];
-while ($row = $result->fetch_assoc()) {
-    $stats['registrations_by_month'][$row['month']] = $row['count'];
-}
+", [$six_months_ago], "s");
+$stats['registrations_by_month'] = array_column($registrations_by_month_data, 'count', 'month');
+
 
 // Average participation rate
-$result = $conn->query("
-    SELECT
-        AVG(registrations_count) as avg_registrations
+$avg_reg_data = fetch_all($conn, "
+    SELECT AVG(registrations_count) as avg_registrations
     FROM (
-        SELECT e.id, COUNT(r.id) as registrations_count
+        SELECT COUNT(r.id) as registrations_count
         FROM events e
         LEFT JOIN registrations r ON e.id = r.event_id
         GROUP BY e.id
     ) as event_stats
 ");
-$stats['avg_registrations'] = round($result->fetch_assoc()['avg_registrations'], 2);
+$stats['avg_registrations'] = round($avg_reg_data[0]['avg_registrations'] ?? 0, 2);
 
 // Percentage of full events
-$result = $conn->query("
+$full_events_data = fetch_all($conn, "
     SELECT
         SUM(CASE WHEN registrations_count >= max_participants AND max_participants > 0 THEN 1 ELSE 0 END) as full_events,
         COUNT(*) as total_events
     FROM (
-        SELECT e.id, e.max_participants, COUNT(r.id) as registrations_count
+        SELECT e.max_participants, COUNT(r.id) as registrations_count
         FROM events e
         LEFT JOIN registrations r ON e.id = r.event_id
         WHERE e.max_participants > 0
         GROUP BY e.id
     ) as event_stats
-");
-$full_events_data = $result->fetch_assoc();
-$stats['full_events_percent'] = $full_events_data['total_events'] > 0
+")[0];
+$stats['full_events_percent'] = ($full_events_data['total_events'] ?? 0) > 0
     ? round(($full_events_data['full_events'] / $full_events_data['total_events']) * 100, 2)
     : 0;
 ?>

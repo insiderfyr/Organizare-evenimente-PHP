@@ -1,7 +1,11 @@
 <?php
+// Include security functions
+require_once __DIR__ . '/security.php';
+require_once __DIR__ . '/../config/config.php';
 
+// Backward compatibility wrapper for old sanitize() calls
 function sanitize($data) {
-    return htmlspecialchars(trim($data), ENT_QUOTES, 'UTF-8');
+    return sanitize_text($data);
 }
 
 function redirect($path){
@@ -15,5 +19,23 @@ function is_logged_in(){
 
 function get_user_id(){
     return $_SESSION['user_id'] ?? null;
+}
+
+function get_user_role() {
+    return $_SESSION['role'] ?? null;
+}
+
+function has_role($required_role) {
+    $role = get_user_role();
+    
+    if ($required_role === 'admin') {
+        return $role === 'admin';
+    }
+    
+    if ($required_role === 'organizer') {
+        return in_array($role, ['admin', 'organizer']);
+    }
+    
+    return true; // user role or any authenticated user
 }
 ?>

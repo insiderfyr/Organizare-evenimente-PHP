@@ -11,54 +11,69 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
 // General statistics
 $stats = [];
 
+// Helper function for single stat queries
+function fetch_stat($conn, $query, $params = [], $types = "") {
+    $stmt = $conn->prepare($query);
+    if (!empty($params)) {
+        $stmt->bind_param($types, ...$params);
+    }
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $data = $result->fetch_assoc();
+    $stmt->close();
+    return $data['total'] ?? 0;
+}
+
 // Total users
-$result = $conn->query("SELECT COUNT(*) as total FROM users");
-$stats['total_users'] = $result->fetch_assoc()['total'];
+$stats['total_users'] = fetch_stat($conn, "SELECT COUNT(*) as total FROM users");
 
 // Total events
-$result = $conn->query("SELECT COUNT(*) as total FROM events");
-$stats['total_events'] = $result->fetch_assoc()['total'];
+$stats['total_events'] = fetch_stat($conn, "SELECT COUNT(*) as total FROM events");
 
 // Total registrations
-$result = $conn->query("SELECT COUNT(*) as total FROM registrations");
-$stats['total_registrations'] = $result->fetch_assoc()['total'];
+$stats['total_registrations'] = fetch_stat($conn, "SELECT COUNT(*) as total FROM registrations");
 
 // Total organizers
-$result = $conn->query("SELECT COUNT(*) as total FROM users WHERE role IN ('admin', 'organizer')");
-$stats['total_organizers'] = $result->fetch_assoc()['total'];
+$stats['total_organizers'] = fetch_stat($conn, "SELECT COUNT(*) as total FROM users WHERE role IN ('admin', 'organizer')");
 
 // Upcoming events
-$result = $conn->query("SELECT COUNT(*) as total FROM events WHERE date >= NOW()");
-$stats['upcoming_events'] = $result->fetch_assoc()['total'];
+$stats['upcoming_events'] = fetch_stat($conn, "SELECT COUNT(*) as total FROM events WHERE date >= NOW()");
 
 // New users (last 30 days)
-$result = $conn->query("SELECT COUNT(*) as total FROM users WHERE created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)");
-$stats['new_users'] = $result->fetch_assoc()['total'];
+$thirty_days_ago = date('Y-m-d H:i:s', strtotime('-30 days'));
+$stats['new_users'] = fetch_stat($conn, "SELECT COUNT(*) as total FROM users WHERE created_at >= ?", [$thirty_days_ago], "s");
+
 
 // Last 5 created events
 $recent_events = [];
-$result = $conn->query("
+$stmt = $conn->prepare("
     SELECT e.id, e.title, e.date, e.location, u.username as organizer
     FROM events e
     JOIN users u ON e.organizer_id = u.id
     ORDER BY e.created_at DESC
     LIMIT 5
 ");
+$stmt->execute();
+$result = $stmt->get_result();
 while ($row = $result->fetch_assoc()) {
     $recent_events[] = $row;
 }
+$stmt->close();
 
 // Last 5 registered users
 $recent_users = [];
-$result = $conn->query("
+$stmt = $conn->prepare("
     SELECT id, username, email, role, created_at
     FROM users
     ORDER BY created_at DESC
     LIMIT 5
 ");
+$stmt->execute();
+$result = $stmt->get_result();
 while ($row = $result->fetch_assoc()) {
     $recent_users[] = $row;
 }
+$stmt->close();
 ?>
 <?php include '../includes/header.php'; ?>
 <?php include '../includes/navbar.php'; ?>

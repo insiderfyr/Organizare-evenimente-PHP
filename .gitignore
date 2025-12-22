@@ -33,8 +33,7 @@ composer.lock
 config/config.php
 config/mail_config.php
 db/db_connect.php
-.env
-.env.local
+
 
 # Upload directories
 uploads/

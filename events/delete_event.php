@@ -5,7 +5,8 @@ require_once '../includes/functions.php';
 require_once '../db/db_connect.php';
 
 // Check if user has organizer or admin role
-if (!isset($_SESSION['role']) || ($_SESSION['role'] !== 'admin' && $_SESSION['role'] !== 'organizer')) {
+if (!has_role('organizer')) {
+    log_security_event('UNAUTHORIZED_ACCESS', 'Attempted access to delete_event without proper role');
     redirect('/index.php');
 }
 
@@ -14,9 +15,9 @@ if (!isset($_GET['id'])) {
     redirect('/events/list_events.php');
 }
 
-$event_id = (int)$_GET['id'];
+$event_id = sanitize_int($_GET['id']);
 $user_id = get_user_id();
-$user_role = $_SESSION['role'];
+$user_role = get_user_role();
 
 // Get event details
 $stmt = $conn->prepare("SELECT * FROM events WHERE id = ?");
@@ -32,6 +33,7 @@ if (!$event) {
 
 // Check if user is the event organizer or admin
 if ($event['organizer_id'] != $user_id && $user_role !== 'admin') {
+    log_security_event('UNAUTHORIZED_ACCESS', "Attempted to delete event ID: $event_id without permission");
     redirect('/events/list_events.php');
 }
 
@@ -47,23 +49,44 @@ $error = '';
 
 // Process deletion
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_delete'])) {
-    // Delete all registrations first
-    $stmt = $conn->prepare("DELETE FROM registrations WHERE event_id = ?");
-    $stmt->bind_param("i", $event_id);
-    $stmt->execute();
-    $stmt->close();
-
-    // Then delete the event
-    $stmt = $conn->prepare("DELETE FROM events WHERE id = ?");
-    $stmt->bind_param("i", $event_id);
-
-    if ($stmt->execute()) {
-        $_SESSION['success_message'] = "Event deleted successfully!";
-        redirect('/events/list_events.php');
-    } else {
-        $error = "Error deleting event!";
+    
+    // Validate CSRF token
+    if (!validate_csrf_token()) {
+        $error = "Invalid security token. Please refresh the page and try again.";
+        log_security_event('CSRF_VALIDATION_FAILED', "Delete event attempt with invalid CSRF token - Event ID: $event_id");
     }
-    $stmt->close();
+    // Validate request origin
+    else if (!validate_request_origin()) {
+        $error = "Invalid request origin.";
+        log_security_event('INVALID_REQUEST_ORIGIN', "Delete event from suspicious origin - Event ID: $event_id");
+    }
+    else {
+        // Double check ownership before deletion
+        if ($event['organizer_id'] != $user_id && $user_role !== 'admin') {
+            $error = "You don't have permission to delete this event!";
+            log_security_event('UNAUTHORIZED_DELETE', "Attempted unauthorized delete - Event ID: $event_id");
+        } else {
+            // Delete all registrations first
+            $stmt = $conn->prepare("DELETE FROM registrations WHERE event_id = ?");
+            $stmt->bind_param("i", $event_id);
+            $stmt->execute();
+            $stmt->close();
+
+            // Then delete the event
+            $stmt = $conn->prepare("DELETE FROM events WHERE id = ?");
+            $stmt->bind_param("i", $event_id);
+
+            if ($stmt->execute()) {
+                log_security_event('EVENT_DELETED', "Event ID: $event_id, Title: {$event['title']}, Registrations: $registrations_count");
+                $_SESSION['success_message'] = "Event deleted successfully!";
+                redirect('/events/list_events.php');
+            } else {
+                $error = "Error deleting event!";
+                log_security_event('EVENT_DELETE_ERROR', "Database error - Event ID: $event_id");
+            }
+            $stmt->close();
+        }
+    }
 }
 ?>
 <?php include '../includes/header.php'; ?>
@@ -83,7 +106,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_delete'])) {
 
                 <?php if (!empty($error)): ?>
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        <?php echo htmlspecialchars($error); ?>
+                        <i class="bi bi-exclamation-triangle"></i> <?php echo htmlspecialchars($error); ?>
                         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
                 <?php endif; ?>
@@ -127,6 +150,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_delete'])) {
                     <?php endif; ?>
 
                     <form method="POST" action="">
+                        <?php echo csrf_token_field(); ?>
+                        
                         <div class="d-flex justify-content-between gap-2">
                             <a href="/events/view_event.php?id=<?php echo $event_id; ?>" class="btn btn-secondary flex-grow-1">
                                 <i class="bi bi-x-circle"></i> Cancel

@@ -33,6 +33,24 @@ function process_contact_form(&$error, &$success, &$name, &$email, &$subject, &$
             $success = "Your message has been sent successfully! We will get back to you soon.";
             log_security_event('CONTACT_FORM_SUBMITTED', "From: $email, Subject: $subject");
             
+            // Send email notification
+            $to = CONTACT_EMAIL_RECIPIENT;
+            $email_subject = "New Contact Form Submission: " . $subject;
+            $email_body = "Name: " . $name . "\n"
+                        . "Email: " . $email . "\n"
+                        . "Subject: " . $subject . "\n"
+                        . "Message: " . $message;
+            $headers = "From: " . $email . "\r\n"
+                     . "Reply-To: " . $email . "\r\n"
+                     . "X-Mailer: PHP/" . phpversion();
+
+            if (mail($to, $email_subject, $email_body, $headers)) {
+                log_security_event('CONTACT_EMAIL_SENT', "Email sent to $to for subject: $subject");
+            } else {
+                error_log("Failed to send contact form email to $to from $email with subject $email_subject");
+                log_security_event('CONTACT_EMAIL_FAILED', "Email failed to send to $to for subject: $subject");
+            }
+            
             $name = $email = $subject = $message = '';
             
             reset_rate_limit('contact');

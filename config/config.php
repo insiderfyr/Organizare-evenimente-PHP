@@ -11,12 +11,14 @@ define('DB_USER', 'root');
 define('DB_PASS', ''); // Usually empty for XAMPP/MAMP root user
 define('DB_NAME', 'eventmanager_db'); // Replace with your actual database name
 
+define('CONTACT_EMAIL_RECIPIENT', 'your_email@example.com');
+
 // -- SECURITY SETTINGS --
 
 // reCAPTCHA v2 Keys
 // Get your keys from: https://www.google.com/recaptcha/admin/create
 // These are EXAMPLE/FAKE keys. You MUST replace them with your own.
-define('ENABLE_RECAPTCHA', true); // Set to false to disable reCAPTCHA on forms
+define('ENABLE_RECAPTCHA', false); // Set to false to disable reCAPTCHA on forms
 define('RECAPTCHA_SITE_KEY', '6LeTA_0UAAAAAO-c_0J-e_0J-e_0J-e_0J'); // Replace with YOUR Site Key
 define('RECAPTCHA_SECRET_KEY', '6LeTA_0UAAAAAP-d_0K-f_0K-f_0K-f_0K'); // Replace with YOUR Secret Key
 

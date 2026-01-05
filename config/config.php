@@ -9,7 +9,7 @@
 define('DB_HOST', 'localhost');
 define('DB_USER', 'root');
 define('DB_PASS', ''); // Usually empty for XAMPP/MAMP root user
-define('DB_NAME', 'event_management_db'); // Replace with your actual database name
+define('DB_NAME', 'eventmanager_db'); // Replace with your actual database name
 
 // -- SECURITY SETTINGS --
 
